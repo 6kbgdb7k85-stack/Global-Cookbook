@@ -5,8 +5,8 @@ from models import *
 
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
-    username = fields.String(required=True)
-    email = fields.Email(required=True)
+    username = fields.String(required=True,error_messages={"required":"Username is required"})
+    email = fields.Email(required=True,error_messages={"required":"Email is required"})
     password = fields.String(
         load_only=True,
         validate=[
@@ -29,6 +29,7 @@ class UserSchema(Schema):
                 error="Password must contain at least one special character.",
             ),
         ],
+        required=True
     )
     recipe_default_private = fields.Bool(load_default=False)
 
@@ -43,6 +44,7 @@ class UserSchema(Schema):
     favorite_recipes = fields.List(
         fields.Nested(lambda: RecipeSchema(exclude=("favorite_users", "comments")))
     )
+    comments = fields.List(fields.Nested(lambda:CommentSchema(exclude=("user",))))
 
     @validates("username")
     def validate_unique_username(self, username, **kwargs):
