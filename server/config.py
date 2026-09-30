@@ -40,4 +40,4 @@ db.init_app(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
-api = Api(app)
+api = Api(app,prefix="/gcb")

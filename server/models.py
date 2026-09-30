@@ -30,16 +30,16 @@ class User(GlobalCookBookModel):
     blocking = db.relationship(
         "User",
         secondary="gcb_user_blocking",
-        primaryjoin="User.id == gcb_user_blocking.user_id",
-        secondaryjoin="User.id == gcb_user_blocking.blocking_id",
+        primaryjoin="User.id == gcb_user_blocking.c.user_id",
+        secondaryjoin="User.id == gcb_user_blocking.c.blocking_id",
         lazy="dynamic",
         back_populates="blocked_by",
     )
     blocked_by = db.relationship(
         "User",
         secondary="gcb_user_blocking",
-        primaryjoin="User.id == gcb_user_blocking.blocking_id",
-        secondaryjoin="User.id == gcb_user_blocking.user_id",
+        primaryjoin="User.id == gcb_user_blocking.c.blocking_id",
+        secondaryjoin="User.id == gcb_user_blocking.c.user_id",
         lazy="dynamic",
         back_populates="blocking",
     )

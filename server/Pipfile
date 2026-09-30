@@ -17,6 +17,7 @@ gunicorn = "*"
 flask-cors = "*"
 psycopg = {extras = ["binary"], version = "*"}
 flask-migrate = "*"
+faker = "*"
 
 [dev-packages]
 
