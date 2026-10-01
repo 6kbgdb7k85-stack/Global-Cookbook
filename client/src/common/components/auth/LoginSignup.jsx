@@ -1,5 +1,11 @@
-import { Button, Link, TextField, Typography, useFormControl } from "@mui/material";
-import { useMemo, useState } from "react";
+import {
+  Button,
+  Link,
+  TextField,
+  Typography,
+  useFormControl,
+} from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
 import { useOutletContext } from "react-router";
 import FormWrapper from "../form/FormWrapper";
 import { loginFields, signupFields } from "./loginFields";
@@ -10,7 +16,7 @@ const initFormData = {
   username: "",
   email: "",
   password: "",
-  confirmPassword: "",
+  confirm_pass: "",
 };
 
 export default function LoginSignup() {
@@ -18,8 +24,20 @@ export default function LoginSignup() {
   const [formData, setFormData] = useState(initFormData);
   const { setUser } = useOutletContext();
 
-  const {response:loginResponse,loading:loginLoading,error:loginError,setError:setLoginError,runFetch:runLogin}=useFetch('login','POST',false)
-  const {response:signupResponse,loading:setSignupResponse,error:signupError,setError:setSignupError,runFetch:runSignup}=useFetch('signup','POST',false)
+  const {
+    response: loginResponse,
+    loading: loginLoading,
+    error: loginError,
+    setError: setLoginError,
+    runFetch: runLogin,
+  } = useFetch("login", "POST", false);
+  const {
+    response: signupResponse,
+    loading: setSignupResponse,
+    error: signupError,
+    setError: setSignupError,
+    runFetch: runSignup,
+  } = useFetch("signup", "POST", false);
 
   function handleChange(e) {
     setFormData((prevFormData) => ({
@@ -28,25 +46,49 @@ export default function LoginSignup() {
     }));
   }
 
+  useEffect(() => {
+    if (loginResponse) {
+      setUser(loginResponse.user);
+      localStorage.setItem("token", loginResponse.token);
+    }
+  }, [loginResponse]);
+
+  useEffect(() => {
+    if (signupResponse) {
+      setUser(signupResponse.user);
+      localStorage.setItem("token", signupResponse.token);
+    }
+  }, [signupResponse]);
+
   function handleSubmit(e) {
     e.preventDefault();
-    if(signup){
-        runSignup(compilePayload(formData,signupFields))
-    }else{
-        runLogin(compilePayload(formData,loginFields))
+    if (signup) {
+      runSignup(compilePayload(formData, signupFields));
+    } else {
+      runLogin(compilePayload(formData, loginFields));
     }
   }
 
-  function switchMode(){
-    setSignup(prevSignup=>!prevSignup)
-    setFormData(initFormData)
+  function switchMode() {
+    setSignup((prevSignup) => !prevSignup);
+    setFormData(initFormData);
   }
 
   function compileModeSwitchMethod() {
     if (signup) {
-      return <>Already have an account? Click <Link onClick={switchMode}>here</Link> to login.</>;
+      return (
+        <>
+          Already have an account? Click <Link onClick={switchMode}>here</Link>{" "}
+          to login.
+        </>
+      );
     }
-    return <>Don't have an account? Click <Link onClick={switchMode}>here</Link> to create an account.</>;
+    return (
+      <>
+        Don't have an account? Click <Link onClick={switchMode}>here</Link> to
+        create an account.
+      </>
+    );
   }
 
   return (

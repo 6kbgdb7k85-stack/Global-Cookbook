@@ -19,6 +19,7 @@ export default function useFetch(url, method = "GET", onLoad = true) {
           error.data = data;
           throw error;
         }
+        return data;
       })
       .then((data) => {
         setLoading(false);
