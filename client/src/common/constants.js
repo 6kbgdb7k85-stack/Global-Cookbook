@@ -1,0 +1,7 @@
+export const FIELD_TYPES = {
+  TEXT: "TEXT",
+  PASSWORD: "PASSWORD",
+  EMAIL: "EMAIL",
+  NUMBER: "NUMBER",
+  TEXTAREA: "TEXTAREA",
+};
