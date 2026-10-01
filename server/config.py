@@ -6,6 +6,7 @@ from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 app = Flask(__name__)
 
@@ -39,5 +40,9 @@ db.init_app(app)
 
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
+
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
+
+CORS(app, resources={r"/gcb/*": {"origins": [FRONTEND_URL]}})
 
 api = Api(app,prefix="/gcb")
