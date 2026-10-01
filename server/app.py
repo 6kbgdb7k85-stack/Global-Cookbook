@@ -150,22 +150,8 @@ class UserProfile(Resource):
 
 class RecipeList(Resource):
     def get(self):
-        page = request.view_args.get("page", DEFAULT_PAGE, type=int)
-        per_page = request.args.get("per_page", DEFAULT_PER_PAGE, type=int)
-        pagination = Recipe.query.paginate(
-            page=page, per_page=per_page, error_out=False
-        )
-        recipes = pagination.items
-        return make_response(
-            {
-                "page": page,
-                "per_page": per_page,
-                "total": pagination.total,
-                "total_pages": pagination.pages,
-                "items": [RecipeSchema().dump(recipe) for recipe in recipes],
-            },
-            200,
-        )
+        recipes = Recipe.query.all()
+        return make_response(jsonify([RecipeSchema().dump(recipe) for recipe in recipes]),200)
 
     def post(self):
         user_id = get_jwt_identity()

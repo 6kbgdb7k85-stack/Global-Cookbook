@@ -9,6 +9,7 @@ export default function FormField({
   onChange = () => {},
   error,
   inTable = false,
+  onBlur=()=>{}
 }) {
   const [showPass, setShowPass] = useState(false);
 
@@ -20,19 +21,24 @@ export default function FormField({
     setShowPass(prevShow=>!prevShow)
   }
 
+  const standardProps = {
+    id: field.id,
+    name: field.id,
+    label: field.label,
+    value,
+    error,
+    helperText: error,
+    onChange: handleChange,
+    onBlur,
+    required: field.required,
+  };
+
   switch (field.type) {
     case FIELD_TYPES.PASSWORD:
       return (
         <TextField
-          id={field.id}
-          name={field.id}
-          label={field.label}
+          {...standardProps}
           type={showPass ? "text" : "password"}
-          value={value}
-          error={error}
-          helperText={error}
-          onChange={handleChange}
-          required={field.required}
           slotProps={{
             input:{
                 endAdornment:(
@@ -46,15 +52,8 @@ export default function FormField({
     default:
       return (
         <TextField
-          id={field.id}
-          name={field.id}
-          label={field.label}
+          {...standardProps}
           type={field.type || "text"}
-          value={value}
-          error={error}
-          helperText={error}
-          onChange={handleChange}
-          required={field.required}
           sx={{width:'100%'}}
         />
       );
