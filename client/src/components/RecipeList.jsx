@@ -13,7 +13,7 @@ import useFetch from "../common/utils/useFetch";
 import { useEffect } from "react";
 
 export default function RecipeList() {
-  const { user } = useOutletContext();
+  const { user, session } = useOutletContext();
 
   const {
     response: recipes,

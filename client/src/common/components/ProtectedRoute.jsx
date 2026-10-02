@@ -4,24 +4,23 @@ import { useEffect } from "react";
 
 export default function ProtectedRoute() {
   const appContext = useOutletContext();
-
-  const {
-    response: session,
-    loading: sessionLoading,
-    error: sessionError
-  } = useFetch("me");
+  const { session, setUser, sessionError, sessionLoading, getSession } = appContext;
 
   const navigate = useNavigate();
 
   useEffect(() => {
+    getSession();
+  }, []);
+
+  useEffect(() => {
     if (session) {
-      appContext.setUser(session);
+      setUser(session);
     }
   }, [session]);
 
   useEffect(() => {
     if (sessionError) {
-      appContext.setUser(null);
+      setUser(null);
       localStorage.removeItem("token");
       navigate("/");
     }
