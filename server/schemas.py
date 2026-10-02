@@ -66,19 +66,19 @@ class RecipeSchema(Schema):
     ingredients = fields.String()
     instructions = fields.String()
     private = fields.Boolean()
-    time_created = fields.DateTime(dump_only=True)
+    created_time = fields.DateTime(dump_only=True)
 
     user = fields.Nested(lambda: UserSchema(exclude=("recipes", "comments")))
     favoriteUsers = fields.List(
-        fields.Nested(lambda: UserSchema(exclucde=("favorite_recipes", "comments")))
+        fields.Nested(lambda: UserSchema(exclude=("favorite_recipes", "comments")))
     )
-    comments = fields.Nested(lambda: CommentSchema(exclude=("user", "recipe")))
+    comments = fields.List(fields.Nested(lambda: CommentSchema(exclude=("user", "recipe"))))
 
 
 class CommentSchema(Schema):
     id = fields.Int(dump_only=True)
     text = fields.String()
-    time_created = fields.DateTime(dump_only=True)
+    created_time = fields.DateTime(dump_only=True)
 
     recipe = fields.Nested(lambda: RecipeSchema(exclude=("comments", "user")))
     user = fields.Nested(lambda: UserSchema(exclude=("recipes", "comments")))
