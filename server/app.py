@@ -159,7 +159,7 @@ class UserProfile(Resource):
 
 class RecipeList(Resource):
     def get(self):
-        recipes = Recipe.query.all()
+        recipes = Recipe.query.filter(Recipe.private!=True or Recipe.user_id==get_jwt_identity())
         return make_response(
             jsonify([RecipeSchema().dump(recipe) for recipe in recipes]), 200
         )
