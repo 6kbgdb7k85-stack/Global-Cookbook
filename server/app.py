@@ -26,6 +26,7 @@ from constants import (
 def force_native_flask_errors(e):
     raise e
 
+
 api.handle_error = force_native_flask_errors
 api.error_router = lambda self, handler, e: handler(e)
 
@@ -71,6 +72,8 @@ def check_permission():
     if request.method == "OPTIONS":
         return None
     if request.endpoint not in USER_ENDPOINTS:
+        return None
+    if request.method == "GET":
         return None
     user_id = get_jwt_identity()
     user = User.query.filter(User.id == user_id).first()
@@ -124,6 +127,12 @@ class Signup(Resource):
         return make_response(jsonify(token=auth_token, user=UserSchema().dump(user)))
 
 
+class CheckSession(Resource):
+    def get(self):
+        user = User.query.filter(User.id == get_jwt_identity()).first()
+        return make_response(UserSchema().dump(user), 200)
+
+
 class UserProfile(Resource):
     def dispatch_request(self, *args, **kwargs):
         user_id = kwargs["user_id"]
@@ -151,7 +160,9 @@ class UserProfile(Resource):
 class RecipeList(Resource):
     def get(self):
         recipes = Recipe.query.all()
-        return make_response(jsonify([RecipeSchema().dump(recipe) for recipe in recipes]),200)
+        return make_response(
+            jsonify([RecipeSchema().dump(recipe) for recipe in recipes]), 200
+        )
 
     def post(self):
         user_id = get_jwt_identity()
@@ -190,21 +201,9 @@ class RecipeView(Resource):
 
 class CommentList(Resource):
     def get(self, recipe_id):
-        page = request.args.get("page", DEFAULT_PAGE, type=int)
-        per_page = request.args.get("per_page", DEFAULT_PER_PAGE, type=int)
-        pagination = Comment.query.filter(Comment.recipe_id == recipe_id).paginate(
-            page=page, per_page=per_page, error_out=False
-        )
-        comments = pagination.items
+        comments = Comment.query.filter(Comment.recipe_id == recipe_id).all()
         return make_response(
-            {
-                "page": page,
-                "per_page": per_page,
-                "total": pagination.total,
-                "total_pages": pagination.pages,
-                "items": [CommentSchema().dump(comment) for comment in comments],
-            },
-            200,
+            jsonify([CommentSchema().dump(comment) for comment in comments]), 200
         )
 
     def post(self, recipe_id):
@@ -222,23 +221,23 @@ class CommentView(Resource):
         comment_id = kwargs["comment_id"]
         self.comment = Comment.query.filter(Comment.id == comment_id).first()
         return super().dispatch_request(*args, **kwargs)
-    
+
     def get(self, comment_id):
-        return make_response(CommentSchema().dump(self.comment),200)
-    
+        return make_response(CommentSchema().dump(self.comment), 200)
+
     def patch(self, comment_id):
         validated_data = CommentSchema().load(
             request.get_json(), partial=True, unknown=EXCLUDE
         )
         for k, v in validated_data.items():
-            setattr(self.comment,k,v)
+            setattr(self.comment, k, v)
         db.session.commit()
-        return make_response(CommentSchema().dump(self.comment),200)
+        return make_response(CommentSchema().dump(self.comment), 200)
 
-    def delete(self,comment_id):
+    def delete(self, comment_id):
         db.session.delete(self.comment)
         db.session.commit()
-        return make_response({},204)
+        return make_response({}, 204)
 
 
 api.add_resource(Login, "/login", endpoint="login")
@@ -247,7 +246,8 @@ api.add_resource(UserProfile, "/users/<int:user_id>", endpoint="user")
 api.add_resource(RecipeList, "/recipes", endpoint="recipes")
 api.add_resource(RecipeView, "/recipes/<int:recipe_id>", endpoint="recipe")
 api.add_resource(CommentList, "/recipes/<int:recipe_id>/comments", endpoint="comments")
-api.add_resource(CommentView,"/comments/<int:comment_id>",endpoint="comment")
+api.add_resource(CommentView, "/comments/<int:comment_id>", endpoint="comment")
+api.add_resource(CheckSession, "/me", endpoint="me")
 
 if __name__ == "__main__":
     # Run the app locally in debug mode

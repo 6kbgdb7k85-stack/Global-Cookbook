@@ -101,6 +101,8 @@ export default function LoginSignup() {
         onChange={handleChange}
         onSubmit={handleSubmit}
         submitLabel={"Login"}
+        edit={true}
+        noCancel
       />
       <Typography variant="body1">{compileModeSwitchMethod()}</Typography>
     </>

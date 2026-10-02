@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function useFetch(url, method = "GET", onLoad = true) {
@@ -6,7 +6,16 @@ export default function useFetch(url, method = "GET", onLoad = true) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  useEffect(()=>{
+    if(onLoad){
+      runFetch()
+    }
+  },[])
+
   function runFetch(body = {}) {
+    if(url.includes('undefined')){
+      return
+    }
     const { urlParams = {}, searchParams = {}, ...payload } = body;
     fetch(compileUrl(urlParams, searchParams), compileOptions(payload))
       .then(async (r) => {

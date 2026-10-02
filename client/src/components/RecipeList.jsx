@@ -1,6 +1,7 @@
 import { useNavigate, useOutletContext } from "react-router";
 import LoginSignup from "../common/components/auth/LoginSignup";
 import {
+  Button,
   Card,
   CardActionArea,
   CardContent,
@@ -35,10 +36,18 @@ export default function RecipeList() {
   return (
     <>
       <Grid container spacing={2}>
+        <Grid size={12}>
+          <Grid container>
+            <Grid size={"grow"}></Grid>
+            <Grid size={1}>
+              <Button variant="contained" onClick={()=>navigate('/new-recipe')}>Create Recipe</Button>
+            </Grid>
+          </Grid>
+        </Grid>
         {recipes?.map((recipe) => (
           <Grid size={4} key={"recipe-" + recipe.id}>
             <Card>
-              <CardActionArea onClick={()=>navigate(`/recipes/${recipe.id}`)}>
+              <CardActionArea onClick={() => navigate(`/recipes/${recipe.id}`)}>
                 <CardHeader title={recipe.name} />
                 <CardContent>
                   <Typography variant="body1">{recipe.description}</Typography>

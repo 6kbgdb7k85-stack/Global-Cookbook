@@ -16,6 +16,7 @@ createRoot(document.getElementById("root")).render(
           <Route element={<ProtectedRoute />}>
             <Route path="profile" element={<UserProfile />} />
             <Route path="recipes/:recipeId" element={<RecipeView />} />
+            <Route path="new-recipe" element={<RecipeView/>}/>
           </Route>
         </Route>
       </Routes>
