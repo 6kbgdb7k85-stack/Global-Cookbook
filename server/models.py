@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy.orm import validates, declared_attr
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -72,7 +74,7 @@ class Recipe(GlobalCookBookModel):
     description = db.Column(db.String)
     ingredients = db.Column(db.String)
     instructions = db.Column(db.String)
-    created_time = db.Column(db.DateTime)
+    created_time = db.Column(db.DateTime, default=datetime.now())
     private = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey("gcb_users.id"))
 
@@ -91,7 +93,7 @@ class Recipe(GlobalCookBookModel):
 class Comment(GlobalCookBookModel):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String, nullable=False)
-    created_time = db.Column(db.DateTime)
+    created_time = db.Column(db.DateTime, default=datetime.now())
     recipe_id = db.Column(db.Integer, db.ForeignKey("gcb_recipes.id"), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("gcb_users.id"), nullable=False)
 
