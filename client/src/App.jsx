@@ -9,14 +9,28 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
+import useFetch from "./common/utils/useFetch";
 
 function App() {
   const [user, setUser] = useState(null);
   const [menuAnchor, setMenuAnchor] = useState(null);
 
+  const {
+    response: session,
+    loading: sessionLoading,
+    error: sessionError,
+    runFetch: getSession
+  } = useFetch("me");
+
   const navigate = useNavigate()
+
+  useEffect(()=>{
+    if(session){
+      setUser(session)
+    }
+  },[session])
 
   function toggleMenu(e = {}) {
     setMenuAnchor(menuAnchor ? false : e.currentTarget);
@@ -57,7 +71,7 @@ function App() {
           </Toolbar>
         </AppBar>
       </Box>
-      <Outlet context={{user,setUser}} />
+      <Outlet context={{user,setUser,getSession,session}} />
     </>
   );
 }
