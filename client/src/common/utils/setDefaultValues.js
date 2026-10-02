@@ -1,3 +1,5 @@
+import { FIELD_TYPES } from "../constants";
+
 export function setDefaultValues(fields) {
   const obj = {};
   fields.forEach((field) => {
