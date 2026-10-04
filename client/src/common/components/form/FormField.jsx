@@ -21,7 +21,11 @@ export default function FormField({
   const [showPass, setShowPass] = useState(false);
 
   function handleChange(e) {
-    onChange(e, field.type===FIELD_TYPES.SWITCH);
+    console.log(e.target.checked);
+    onChange({
+      name: e.target.name,
+      value: e.target.type === "checkbox" ? e.target.checked : e.target.value,
+    });
   }
 
   function toggleVisibility() {
@@ -67,7 +71,26 @@ export default function FormField({
       return (
         <FormControlLabel
           label={field.label}
-          control={<Switch checked={value===true||value==="true"} id={field.id} name={field.id} onChange={handleChange} />}
+          control={
+            <Switch
+              checked={value}
+              id={field.id}
+              name={field.id}
+              onChange={handleChange}
+            />
+          }
+        />
+      );
+    case FIELD_TYPES.TEXTAREA:
+      if (!edit || field.readonly) {
+        return <Typography variant={field.size}>{value}</Typography>;
+      }
+      return (
+        <TextField
+          {...standardProps}
+          multiline
+          rows={4}
+          sx={{ width: "100%" }}
         />
       );
     default:

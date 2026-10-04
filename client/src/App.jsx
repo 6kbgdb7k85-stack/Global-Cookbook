@@ -39,6 +39,7 @@ function App() {
   function logout(){
     navigate('/')
     setUser(null)
+    setMenuAnchor(false)
   }
 
   return (
@@ -59,7 +60,7 @@ function App() {
                   open={Boolean(menuAnchor)}
                   onClose={toggleMenu}
                 >
-                  <MenuItem onClick={()=>navigate('/profile')}>
+                  <MenuItem onClick={()=>{setMenuAnchor(false);navigate('/profile')}}>
                     Profile
                   </MenuItem>
                   <MenuItem onClick={logout}>
