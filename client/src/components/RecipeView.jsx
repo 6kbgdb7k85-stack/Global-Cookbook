@@ -18,7 +18,7 @@ import compilePayload from "../common/utils/compilePayload";
 export default function RecipeView() {
   const [comments, setComments] = useState([]);
   const [edit, setEdit] = useState(false);
-  const [recipe, setRecipe] = useState({});
+  const [recipe, setRecipe] = useState(null);
   const { recipeId } = useParams();
 
   const { user } = useOutletContext();
@@ -32,16 +32,16 @@ export default function RecipeView() {
   } = useFetch(`recipes/${recipeId}`);
 
   const {
-    response: commentsResponse,
-    loading: commentsLoading,
-    runFetch: getComments,
-  } = useFetch(`recipes/${recipeId}/comments`);
-
-  const {
     response: createRecipeResponse,
     loading: createRecipeLoading,
     runFetch: createRecipe,
   } = useFetch("recipes", "POST", false);
+
+  const {
+    response: commentsResponse,
+    loading: commentsLoading,
+    runFetch: getComments,
+  } = useFetch(`recipes/${recipeId}/comments`);
 
   useEffect(() => {
     if (!recipeId) {
@@ -92,38 +92,54 @@ export default function RecipeView() {
     }
   }
 
-  function handleChange(e, boolean = false) {
+  function handleChange({ name, value }) {
     setRecipe((prevRecipe) => ({
       ...prevRecipe,
-      [e.target.name]: boolean ? e.target.checked : e.target.value,
+      [name]: value,
     }));
   }
 
   return (
     <Box sx={{ mx: "auto", width: 0.5 }}>
-      <FormWrapper
-        fields={RECIPE_FIELDS}
-        formData={recipe || {}}
-        formErrors={{}}
-        canEdit={user?.id == recipe?.user?.id}
-        edit={edit}
-        onChange={handleChange}
-        onSubmit={handleSave}
-        setEdit={setEdit}
-      />
-      {commentsLoading ? (
-        <Box sx={{ mt: "1rem" }}>
-          <Stack spacing={1}>
-            <Skeleton variant="rectangular" width={"100%"} height={75} />
-            <Skeleton variant="rectangular" width={"100%"} height={75} />
-            <Skeleton variant="rectangular" width={"100%"} height={75} />
-          </Stack>
-        </Box>
-      ) : (
+      {recipe && (
         <>
-          {comments.map((comment) => (
-            <Comment key={comment.id} comment={comment} loading={true} />
-          ))}
+          <FormWrapper
+            fields={RECIPE_FIELDS}
+            formData={recipe || {}}
+            formErrors={{}}
+            canEdit={user?.id == recipe?.user?.id}
+            edit={edit}
+            onChange={handleChange}
+            onSubmit={handleSave}
+            setEdit={setEdit}
+          />
+          {commentsLoading ? (
+            <Box sx={{ mt: "1rem" }}>
+              <Stack spacing={1}>
+                <Skeleton variant="rectangular" width={"100%"} height={75} />
+                <Skeleton variant="rectangular" width={"100%"} height={75} />
+                <Skeleton variant="rectangular" width={"100%"} height={75} />
+              </Stack>
+            </Box>
+          ) : (
+            <>
+              <Comment
+                key={"new-comment"}
+                comment={{ text: "" }}
+                canChange={true}
+                onServerUpdate={getComments}
+                isNew
+              />
+              {comments.map((comment) => (
+                <Comment
+                  key={comment.id}
+                  comment={comment}
+                  canChange={comment.user.id === user?.id}
+                  onServerUpdate={getComments}
+                />
+              ))}
+            </>
+          )}
         </>
       )}
     </Box>

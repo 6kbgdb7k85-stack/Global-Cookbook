@@ -39,10 +39,10 @@ export default function LoginSignup() {
     runFetch: runSignup,
   } = useFetch("signup", "POST", false);
 
-  function handleChange(e) {
+  function handleChange({name,value}) {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
   }
 
