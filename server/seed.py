@@ -16,7 +16,7 @@ with app.app_context():
     demo_user = User(username="demo",email="demo@demo.com")
     demo_user.password_hash="demopass1234!@A"
 
-    demo_recipe = Recipe(name="Temu Fried Rice",description="Light-weight meal with decent protein.",ingredients="['2x Eggs','1 cup of rice', '1 cup of water', 'salt']",instructions="Cook the rice in water. When rice is done, or close to, crack the eggs into a bowl. Whisk with fork the whole mix is a shade of yellow (shade will depend on salt content) adding salt to taste. Dump the egg mix into a pan to cook. Move the eggs around the pan to minimize burning and chop into bit-sized pieces with spatula. Once cooked add eggs and rice to a bowl. Mix them together.",created_time=datetime.now(), user=demo_user)
+    demo_recipe = Recipe(name="Discount Fried Rice",description="Light-weight meal with decent protein.",ingredients="['2x Eggs','1 cup of rice', '1 cup of water', 'salt']",instructions="Cook the rice in water. When rice is done, or close to, crack the eggs into a bowl. Whisk with fork the whole mix is a shade of yellow (shade will depend on salt content) adding salt to taste. Dump the egg mix into a pan to cook. Move the eggs around the pan to minimize burning and chop into bit-sized pieces with spatula. Once cooked add eggs and rice to a bowl. Mix them together.",created_time=datetime.now(), user=demo_user)
     demo_comment = Comment(text="I tried to be funny with the name.",created_time=datetime.now(),recipe=demo_recipe,user=demo_user)
 
     db.session.add(demo_user)
