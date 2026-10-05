@@ -15,11 +15,29 @@ import { useOutletContext, useParams } from "react-router";
 import FormField from "../common/components/form/FormField";
 import { FIELD_TYPES, MUI_TYPOGRAPHY_SIZES } from "../common/constants";
 import useFetch from "../common/utils/useFetch";
+import DialogWrapper from "../common/components/DialogWrapper";
 
-export default function Comment({ comment, canChange, onServerUpdate=()=>{}, isNew = false }) {
+export default function Comment({
+  comment,
+  canChange,
+  onServerUpdate = () => {},
+  isNew = false,
+}) {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [commentText, setCommentText] = useState(comment.text);
   const [edit, setEdit] = useState(isNew);
+  const [dialog, setDialog] = useState(null);
+  const dialogConfig = {
+    titles: {
+      delete: "Delete Comment?",
+      block: `Block User ${comment.user?.username}`,
+    },
+    messages: {
+      delete:
+        "You are about to delete your comment. This action cannot be undone. Continue?",
+      block: `By blocking ${comment.user?.username}, you will no longer see their comments and they will not be able to add new comments to your recipes. Already existing comments are not affected. You can manage your blocked users in your profile. Continue?`,
+    },
+  };
 
   const { recipeId } = useParams();
   const { user } = useOutletContext();
@@ -40,8 +58,8 @@ export default function Comment({ comment, canChange, onServerUpdate=()=>{}, isN
       if (updateDeleteCommentResponse?.id) {
         setEdit(false);
         setCommentText(updateDeleteCommentResponse.text);
-      }else{
-        onServerUpdate()
+      } else {
+        onServerUpdate();
       }
     }
   }, [updateDeleteCommentResponse]);
@@ -68,10 +86,10 @@ export default function Comment({ comment, canChange, onServerUpdate=()=>{}, isN
         setEdit(true);
         break;
       case "delete":
-        updateDeleteComment({ method: "DELETE" });
+        setDialog("delete");
         break;
       case "block":
-        console.log(action);
+        setDialog("block");
         break;
       case "save":
         if (comment.id) {
@@ -85,8 +103,25 @@ export default function Comment({ comment, canChange, onServerUpdate=()=>{}, isN
     }
   }
 
+  function handleDialogAction(e) {
+    if (confirm) {
+      if (dialog==="delete"){
+        updateDeleteComment({method:'DELETE'})
+      }else if (dialog==="block"){
+        console.log('block confirmed')
+      }
+    }
+    setDialog(null);
+  }
+
   return (
     <Box sx={{ mt: "1rem" }}>
+      <DialogWrapper
+        title={dialogConfig.titles[dialog]}
+        message={dialogConfig.messages[dialog]}
+        onClose={handleDialogAction}
+        open={!!dialog}
+      />
       <Grid container spacing={0}>
         <Grid size={11}>
           <Stack direction={"row"}>
