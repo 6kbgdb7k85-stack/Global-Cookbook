@@ -23,7 +23,7 @@ export default function UserProfile(){
     }
 
     function unblockUser(userId){
-        console.log(userId)
+        getUpdateUser({unblock:userId,method:'PATCH'})
     }
 
     if(!userData){
@@ -37,7 +37,7 @@ export default function UserProfile(){
             <Typography variant="h6">Blocked Users</Typography>
             <List>
                 {userData.blocking?.map(blockedUser=>(
-                    <ListItem
+                    <ListItem key={blockedUser.id}
                         secondaryAction={
                             <IconButton edge="end" onClick={()=>unblockUser(blockedUser.id)}>
                                 <ClearIcon/>

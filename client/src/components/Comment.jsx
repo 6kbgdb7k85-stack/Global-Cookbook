@@ -53,6 +53,12 @@ export default function Comment({
     false,
   );
 
+  const {
+    response: blockUserResponse,
+    loading: blockUserLoading,
+    runFetch: blockUser,
+  } = useFetch('users/:userId', "PATCH", false);
+
   useEffect(() => {
     if (updateDeleteCommentResponse) {
       if (updateDeleteCommentResponse?.id) {
@@ -105,10 +111,17 @@ export default function Comment({
 
   function handleDialogAction(e) {
     if (confirm) {
-      if (dialog==="delete"){
-        updateDeleteComment({method:'DELETE'})
-      }else if (dialog==="block"){
-        console.log('block confirmed')
+      if (dialog === "delete") {
+        updateDeleteComment({ method: "DELETE" });
+      } else if (dialog === "block") {
+        if (!user) {
+          return;
+        }
+        blockUser({
+          block: comment.user.id,
+          urlParams: { ":userId": user.id },
+        });
+        onServerUpdate();
       }
     }
     setDialog(null);
