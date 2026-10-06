@@ -84,7 +84,7 @@ export default function RecipeList() {
                 </CardContent>
               </CardActionArea>
               <CardContent sx={{textAlign:"right", p:"0 !important"}}>
-                <IconButton onClick={()=>handleFavorite(recipe)}>
+                <IconButton color="primary" onClick={()=>handleFavorite(recipe)}>
                   {isFavorite(user?.id, recipe) ? (
                     <StarTwoToneIcon />
                   ) : (
