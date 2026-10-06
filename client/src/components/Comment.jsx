@@ -57,7 +57,7 @@ export default function Comment({
     response: blockUserResponse,
     loading: blockUserLoading,
     runFetch: blockUser,
-  } = useFetch('users/:userId', "PATCH", false);
+  } = useFetch("users/:userId", "PATCH", false);
 
   useEffect(() => {
     if (updateDeleteCommentResponse) {
@@ -110,7 +110,7 @@ export default function Comment({
   }
 
   function handleDialogAction(e) {
-    if (confirm) {
+    if (e.target.name === "confirm") {
       if (dialog === "delete") {
         updateDeleteComment({ method: "DELETE" });
       } else if (dialog === "block") {

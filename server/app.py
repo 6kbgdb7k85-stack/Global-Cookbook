@@ -198,6 +198,8 @@ class RecipeView(Resource):
     def dispatch_request(self, *args, **kwargs):
         recipe_id = kwargs["recipe_id"]
         self.recipe = Recipe.query.filter(Recipe.id == recipe_id).first()
+        if not self.recipe:
+            abort(404, description=f"Recipe {recipe_id} not found.")
         return super().dispatch_request(*args, **kwargs)
 
     def get(self, recipe_id):
