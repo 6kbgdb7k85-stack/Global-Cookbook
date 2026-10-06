@@ -42,7 +42,7 @@ class UserSchema(Schema):
         fields.Nested(lambda: RecipeSchema(exclude=("user", "comments")))
     )
     favorite_recipes = fields.List(
-        fields.Nested(lambda: RecipeSchema(exclude=("favorite_users", "comments")))
+        fields.Nested(lambda: RecipeSchema(exclude=("favorite_users", "comments","user")))
     )
     comments = fields.List(fields.Nested(lambda:CommentSchema(exclude=("user",))))
 
@@ -69,8 +69,8 @@ class RecipeSchema(Schema):
     created_time = fields.DateTime(dump_only=True)
 
     user = fields.Nested(lambda: UserSchema(exclude=("recipes", "comments")))
-    favoriteUsers = fields.List(
-        fields.Nested(lambda: UserSchema(exclude=("favorite_recipes", "comments")))
+    favorite_users = fields.List(
+        fields.Nested(lambda: UserSchema(exclude=("favorite_recipes", "comments","recipes")),dump_only=True)
     )
     comments = fields.List(fields.Nested(lambda: CommentSchema(exclude=("user", "recipe"))))
 

@@ -3,6 +3,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  IconButton,
   Skeleton,
   Stack,
   Typography,
@@ -14,6 +15,9 @@ import { useEffect, useState } from "react";
 import FormWrapper from "../common/components/form/FormWrapper";
 import { RECIPE_FIELDS } from "../common/constants";
 import compilePayload from "../common/utils/compilePayload";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
+import StarTwoToneIcon from "@mui/icons-material/StarTwoTone";
+import isFavorite from "../common/utils/isFavoriteRecipe";
 
 export default function RecipeView() {
   const [comments, setComments] = useState([]);
@@ -43,6 +47,8 @@ export default function RecipeView() {
     runFetch: getComments,
   } = useFetch(`recipes/${recipeId}/comments`);
 
+  const {response: favoriteRecipeResponse,runFetch:favoriteRecipe}=useFetch('users/:userId','PATCH',false)
+
   useEffect(() => {
     if (!recipeId) {
       setEdit(true);
@@ -61,6 +67,12 @@ export default function RecipeView() {
       setEdit(false);
     }
   }, [recipeResponse]);
+
+  useEffect(()=>{
+    if(favoriteRecipeResponse){
+      updateRecipe()
+    }
+  },[favoriteRecipeResponse])
 
   useEffect(() => {
     if (createRecipeResponse) {
@@ -99,6 +111,21 @@ export default function RecipeView() {
     }));
   }
 
+  function toggleFavorite() {
+    if (!user) {
+      return;
+    }
+    const payload = {urlParams:{":userId":user.id}};
+    if (isFavorite(user.id,recipe)) {
+      payload.unfavorite = recipe.id;
+    } else {
+      payload.favorite = recipe.id;
+    }
+    favoriteRecipe(payload);
+  }
+
+  
+
   return (
     <Box sx={{ mx: "auto", width: 0.5 }}>
       {recipe && (
@@ -113,6 +140,9 @@ export default function RecipeView() {
             onSubmit={handleSave}
             setEdit={setEdit}
           />
+          <IconButton color="primary" onClick={toggleFavorite}>
+            {isFavorite(user?.id,recipe) ? <StarTwoToneIcon /> : <StarBorderIcon />}
+          </IconButton>
           {commentsLoading ? (
             <Box sx={{ mt: "1rem" }}>
               <Stack spacing={1}>

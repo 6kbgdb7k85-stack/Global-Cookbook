@@ -144,25 +144,41 @@ class UserProfile(Resource):
 
     def patch(self, user_id):
         request_body = request.get_json()
-        update_data = UserSchema().load(
-            request_body, partial=True, unknown=EXCLUDE
-        )
+        update_data = UserSchema().load(request_body, partial=True, unknown=EXCLUDE)
         for k, v in update_data.items():
             if k == "password":
                 setattr(self.user, "password_hash", v)
             else:
                 setattr(self.user, k, v)
         if "unblock" in request_body:
-            self.user.blocking = [user for user in self.user.blocking if user.id!=int(request_body['unblock'])]
+            self.user.blocking = [
+                user
+                for user in self.user.blocking
+                if user.id != int(request_body["unblock"])
+            ]
         if "block" in request_body:
-            self.user.blocking.append(User.query.filter(User.id==int(request_body["block"])).first())
+            self.user.blocking.append(
+                Recipe.query.filter(Recipe.id == int(request_body["block"])).first()
+            )
+        if "favorite" in request_body:
+            self.user.favorite_recipes.append(
+                Recipe.query.filter(Recipe.id == int(request_body["favorite"])).first()
+            )
+        if "unfavorite" in request_body:
+            self.user.favorite_recipes = [
+                user
+                for user in self.user.favorite_recipes
+                if user.id != int(request_body["unfavorite"])
+            ]
         db.session.commit()
         return make_response(UserSchema().dump(self.user), 200)
 
 
 class RecipeList(Resource):
     def get(self):
-        recipes = Recipe.query.filter(Recipe.private!=True or Recipe.user_id==get_jwt_identity())
+        recipes = Recipe.query.filter(
+            Recipe.private != True or Recipe.user_id == get_jwt_identity()
+        )
         return make_response(
             jsonify([RecipeSchema().dump(recipe) for recipe in recipes]), 200
         )
@@ -188,8 +204,9 @@ class RecipeView(Resource):
         return make_response(RecipeSchema().dump(self.recipe), 200)
 
     def patch(self, recipe_id):
+        request_body = request.get_json()
         validated_data = RecipeSchema().load(
-            request.get_json(), partial=True, unknown=EXCLUDE
+            request_body, partial=True, unknown=EXCLUDE
         )
         for k, v in validated_data.items():
             setattr(self.recipe, k, v)
@@ -204,10 +221,14 @@ class RecipeView(Resource):
 
 class CommentList(Resource):
     def get(self, recipe_id):
-        user_id=get_jwt_identity()
-        user = User.query.filter(User.id==user_id).first()
+        user_id = get_jwt_identity()
+        user = User.query.filter(User.id == user_id).first()
         blocked_ids = [blocked_user.id for blocked_user in user.blocking]
-        comments = Comment.query.filter(Comment.recipe_id == recipe_id).filter(Comment.user_id.not_in(blocked_ids)).all()
+        comments = (
+            Comment.query.filter(Comment.recipe_id == recipe_id)
+            .filter(Comment.user_id.not_in(blocked_ids))
+            .all()
+        )
         return make_response(
             jsonify([CommentSchema().dump(comment) for comment in comments]), 200
         )

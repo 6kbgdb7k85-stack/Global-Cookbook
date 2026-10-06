@@ -7,10 +7,14 @@ import {
   CardContent,
   CardHeader,
   Grid,
+  IconButton,
   Typography,
 } from "@mui/material";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
+import StarTwoToneIcon from "@mui/icons-material/StarTwoTone";
 import useFetch from "../common/utils/useFetch";
 import { useEffect } from "react";
+import isFavorite from "../common/utils/isFavoriteRecipe";
 
 export default function RecipeList() {
   const { user, session } = useOutletContext();
@@ -21,6 +25,11 @@ export default function RecipeList() {
     runFetch: searchRecipes,
   } = useFetch("recipes");
 
+  const {
+    response: favoriteRecipeResponse,
+    runFetch: favoriteRecipe
+  } = useFetch('users/:userId','PATCH',false)
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,6 +37,22 @@ export default function RecipeList() {
       searchRecipes();
     }
   }, [user]);
+
+  useEffect(()=>{
+    if(favoriteRecipeResponse){
+      searchRecipes()
+    }
+  },[favoriteRecipeResponse])
+
+  function handleFavorite(recipe){
+    const payload={urlParams:{":userId":user.id}}
+    if (isFavorite(user.id,recipe)){
+      payload.unfavorite=recipe.id
+    }else{
+      payload.favorite=recipe.id
+    }
+    favoriteRecipe(payload)
+  }
 
   if (!user) {
     return <LoginSignup />;
@@ -40,7 +65,12 @@ export default function RecipeList() {
           <Grid container>
             <Grid size={"grow"}></Grid>
             <Grid size={1}>
-              <Button variant="contained" onClick={()=>navigate('/new-recipe')}>Create Recipe</Button>
+              <Button
+                variant="contained"
+                onClick={() => navigate("/new-recipe")}
+              >
+                Create Recipe
+              </Button>
             </Grid>
           </Grid>
         </Grid>
@@ -53,6 +83,15 @@ export default function RecipeList() {
                   <Typography variant="body1">{recipe.description}</Typography>
                 </CardContent>
               </CardActionArea>
+              <CardContent sx={{textAlign:"right", p:"0 !important"}}>
+                <IconButton color="primary" onClick={()=>handleFavorite(recipe)}>
+                  {isFavorite(user?.id, recipe) ? (
+                    <StarTwoToneIcon />
+                  ) : (
+                    <StarBorderIcon />
+                  )}
+                </IconButton>
+              </CardContent>
             </Card>
           </Grid>
         ))}
