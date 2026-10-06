@@ -64,6 +64,7 @@ export const RECIPE_FIELDS = [
     type: FIELD_TYPES.SWITCH,
     alwaysEdit:true,
     size: MUI_TYPOGRAPHY_SIZES.BODY1,
-    colSpan:6
+    colSpan:6,
+    visibilityRestriction: "creator"
   },
 ];

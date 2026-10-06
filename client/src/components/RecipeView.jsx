@@ -3,6 +3,8 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Button,
+  Grid,
   IconButton,
   Skeleton,
   Stack,
@@ -17,12 +19,15 @@ import { RECIPE_FIELDS } from "../common/constants";
 import compilePayload from "../common/utils/compilePayload";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarTwoToneIcon from "@mui/icons-material/StarTwoTone";
+import DeleteIcon from "@mui/icons-material/Delete";
 import isFavorite from "../common/utils/isFavoriteRecipe";
+import DialogWrapper from "../common/components/DialogWrapper";
 
 export default function RecipeView() {
   const [comments, setComments] = useState([]);
   const [edit, setEdit] = useState(false);
   const [recipe, setRecipe] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const { recipeId } = useParams();
 
   const { user } = useOutletContext();
@@ -47,13 +52,30 @@ export default function RecipeView() {
     runFetch: getComments,
   } = useFetch(`recipes/${recipeId}/comments`);
 
-  const {response: favoriteRecipeResponse,runFetch:favoriteRecipe}=useFetch('users/:userId','PATCH',false)
+  const { response: favoriteRecipeResponse, runFetch: favoriteRecipe } =
+    useFetch("users/:userId", "PATCH", false);
 
   useEffect(() => {
     if (!recipeId) {
       setEdit(true);
+      setRecipe({
+        name: "",
+        description: "",
+        ingredients: "",
+        instructions: "",
+        private: user?.recipe_default_private,
+      });
     }
   }, []);
+
+  useEffect(()=>{
+    if(user&&!recipeId){
+      setRecipe(prevRecipe=>({
+        ...prevRecipe,
+        private: user.recipe_default_private
+      }))
+    }
+  },[user])
 
   useEffect(() => {
     if (commentsResponse) {
@@ -68,11 +90,11 @@ export default function RecipeView() {
     }
   }, [recipeResponse]);
 
-  useEffect(()=>{
-    if(favoriteRecipeResponse){
-      updateRecipe()
+  useEffect(() => {
+    if (favoriteRecipeResponse) {
+      updateRecipe();
     }
-  },[favoriteRecipeResponse])
+  }, [favoriteRecipeResponse]);
 
   useEffect(() => {
     if (createRecipeResponse) {
@@ -115,8 +137,8 @@ export default function RecipeView() {
     if (!user) {
       return;
     }
-    const payload = {urlParams:{":userId":user.id}};
-    if (isFavorite(user.id,recipe)) {
+    const payload = { urlParams: { ":userId": user.id } };
+    if (isFavorite(user.id, recipe)) {
       payload.unfavorite = recipe.id;
     } else {
       payload.favorite = recipe.id;
@@ -124,12 +146,39 @@ export default function RecipeView() {
     favoriteRecipe(payload);
   }
 
-  
+  function handleDelete(e) {
+    if (e.target.name == "confirm") {
+      updateRecipe({ method: "DELETE" });
+      navigate("/");
+    }
+    setDialogOpen(false);
+  }
 
   return (
     <Box sx={{ mx: "auto", width: 0.5 }}>
       {recipe && (
         <>
+          <DialogWrapper
+            title={"Delete Recipe?"}
+            message={
+              "Are you sure you want to delete this recipe? This action cannot be undone."
+            }
+            onClose={handleDelete}
+            open={dialogOpen}
+          />
+          <Grid container>
+            <Grid size={1} />
+            <Grid size={"grow"} sx={{ textAlign: "center" }}>
+              <Typography variant="h4">Recipe Details</Typography>
+            </Grid>
+            <Grid size={1} sx={{ textAlign: "right" }}>
+              {recipe.user?.id === user?.id && (
+                <IconButton onClick={() => setDialogOpen(true)} color="error">
+                  <DeleteIcon />
+                </IconButton>
+              )}
+            </Grid>
+          </Grid>
           <FormWrapper
             fields={RECIPE_FIELDS}
             formData={recipe || {}}
@@ -140,34 +189,56 @@ export default function RecipeView() {
             onSubmit={handleSave}
             setEdit={setEdit}
           />
-          <IconButton color="primary" onClick={toggleFavorite}>
-            {isFavorite(user?.id,recipe) ? <StarTwoToneIcon /> : <StarBorderIcon />}
-          </IconButton>
-          {commentsLoading ? (
-            <Box sx={{ mt: "1rem" }}>
-              <Stack spacing={1}>
-                <Skeleton variant="rectangular" width={"100%"} height={75} />
-                <Skeleton variant="rectangular" width={"100%"} height={75} />
-                <Skeleton variant="rectangular" width={"100%"} height={75} />
-              </Stack>
-            </Box>
-          ) : (
+          {recipe.id && (
+            <IconButton color="primary" onClick={toggleFavorite}>
+              {isFavorite(user?.id, recipe) ? (
+                <StarTwoToneIcon />
+              ) : (
+                <StarBorderIcon />
+              )}
+            </IconButton>
+          )}
+          {recipe.id && (
             <>
-              <Comment
-                key={"new-comment"}
-                comment={{ text: "" }}
-                canChange={true}
-                onServerUpdate={getComments}
-                isNew
-              />
-              {comments.map((comment) => (
-                <Comment
-                  key={comment.id}
-                  comment={comment}
-                  canChange={comment.user.id === user?.id}
-                  onServerUpdate={getComments}
-                />
-              ))}
+              {commentsLoading ? (
+                <Box sx={{ mt: "1rem" }}>
+                  <Stack spacing={1}>
+                    <Skeleton
+                      variant="rectangular"
+                      width={"100%"}
+                      height={75}
+                    />
+                    <Skeleton
+                      variant="rectangular"
+                      width={"100%"}
+                      height={75}
+                    />
+                    <Skeleton
+                      variant="rectangular"
+                      width={"100%"}
+                      height={75}
+                    />
+                  </Stack>
+                </Box>
+              ) : (
+                <>
+                  <Comment
+                    key={"new-comment"}
+                    comment={{ text: "" }}
+                    canChange={true}
+                    onServerUpdate={getComments}
+                    isNew
+                  />
+                  {comments.map((comment) => (
+                    <Comment
+                      key={comment.id}
+                      comment={comment}
+                      canChange={comment.user.id === user?.id}
+                      onServerUpdate={getComments}
+                    />
+                  ))}
+                </>
+              )}
             </>
           )}
         </>
