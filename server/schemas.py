@@ -35,7 +35,7 @@ class UserSchema(Schema):
 
     blocking = fields.List(fields.Nested(lambda: UserSchema(only=("username","id"))),dump_only=True)
     blocked_by = fields.List(
-        fields.Nested(lambda: UserSchema(only=("id"))),dump_only=True
+        fields.Nested(lambda: UserSchema(only=("id",))),dump_only=True
     )
 
     recipes = fields.List(

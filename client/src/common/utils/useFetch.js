@@ -70,7 +70,7 @@ export default function useFetch(url, method = "GET", onLoad = true) {
 
   function compileUrl(urlParams, searchParams) {
     let compiledUrl = `${API_URL || ""}/gcb/${url}`;
-    Object.entries(urlParams).forEach((key, value) => {
+    Object.entries(urlParams).forEach(([key, value]) => {
       compiledUrl = compiledUrl.replace(key, value);
     });
     const searchList = Object.entries(searchParams);

@@ -152,10 +152,10 @@ class UserProfile(Resource):
                 setattr(self.user, "password_hash", v)
             else:
                 setattr(self.user, k, v)
-        if hasattr(request_body,"unblock"):
-            self.blocking = [user for user in self.blocking if user.id!=int(request_body['unblock'])]
-        if hasattr(request_body,"block"):
-            self.blocking.append(User.query.filter(User.id==int(request_body["block"])).first())
+        if "unblock" in request_body:
+            self.user.blocking = [user for user in self.user.blocking if user.id!=int(request_body['unblock'])]
+        if "block" in request_body:
+            self.user.blocking.append(User.query.filter(User.id==int(request_body["block"])).first())
         db.session.commit()
         return make_response(UserSchema().dump(self.user), 200)
 
@@ -204,7 +204,10 @@ class RecipeView(Resource):
 
 class CommentList(Resource):
     def get(self, recipe_id):
-        comments = Comment.query.filter(Comment.recipe_id == recipe_id).all()
+        user_id=get_jwt_identity()
+        user = User.query.filter(User.id==user_id).first()
+        blocked_ids = [blocked_user.id for blocked_user in user.blocking]
+        comments = Comment.query.filter(Comment.recipe_id == recipe_id).filter(Comment.user_id.not_in(blocked_ids)).all()
         return make_response(
             jsonify([CommentSchema().dump(comment) for comment in comments]), 200
         )
