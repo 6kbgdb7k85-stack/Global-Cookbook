@@ -18,8 +18,6 @@ from constants import (
     ERROR_TYPES,
     USER_ENDPOINTS,
     USER_RESOURCES,
-    DEFAULT_PAGE,
-    DEFAULT_PER_PAGE,
 )
 
 
@@ -145,14 +143,19 @@ class UserProfile(Resource):
         return make_response(UserSchema().dump(self.user), 200)
 
     def patch(self, user_id):
+        request_body = request.get_json()
         update_data = UserSchema().load(
-            request.get_json(), partial=True, unknown=EXCLUDE
+            request_body, partial=True, unknown=EXCLUDE
         )
         for k, v in update_data.items():
             if k == "password":
                 setattr(self.user, "password_hash", v)
             else:
                 setattr(self.user, k, v)
+        if hasattr(request_body,"unblock"):
+            self.blocking = [user for user in self.blocking if user.id!=int(request_body['unblock'])]
+        if hasattr(request_body,"block"):
+            self.blocking.append(User.query.filter(User.id==int(request_body["block"])).first())
         db.session.commit()
         return make_response(UserSchema().dump(self.user), 200)
 

@@ -33,9 +33,9 @@ class UserSchema(Schema):
     )
     recipe_default_private = fields.Bool(load_default=False)
 
-    blocked_users = fields.List(fields.Nested(lambda: UserSchema(only=("username",))))
-    blocked_by_users = fields.List(
-        fields.Nested(lambda: UserSchema(only=("username",)))
+    blocking = fields.List(fields.Nested(lambda: UserSchema(only=("username","id"))),dump_only=True)
+    blocked_by = fields.List(
+        fields.Nested(lambda: UserSchema(only=("id"))),dump_only=True
     )
 
     recipes = fields.List(
