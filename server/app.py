@@ -6,6 +6,7 @@ from flask_jwt_extended import (
     create_access_token,
 )
 from flask_restful import Resource
+from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 from marshmallow import EXCLUDE, ValidationError
 from werkzeug.exceptions import NotFound, InternalServerError
@@ -176,9 +177,24 @@ class UserProfile(Resource):
 
 class RecipeList(Resource):
     def get(self):
+        user_id = get_jwt_identity()
+        search_text = request.args.get("text")
+        search_mode = request.args.get("mode")
         recipes = Recipe.query.filter(
-            Recipe.private != True or Recipe.user_id == get_jwt_identity()
+            Recipe.private != True or Recipe.user_id == user_id
         )
+        if search_mode == "fave":
+            recipes = recipes.filter(Recipe.favorite_users.any(User.id == user_id))
+        elif search_mode == "own":
+            recipes = recipes.filter(Recipe.user_id == user_id)
+        if search_text:
+            recipes = recipes.filter(
+                or_(
+                    Recipe.name.ilike(f"%{search_text}%"),
+                    Recipe.description.ilike(f"%{search_text}%"),
+                    Recipe.ingredients.ilike(f"%{search_text}%"),
+                )
+            )
         return make_response(
             jsonify([RecipeSchema().dump(recipe) for recipe in recipes]), 200
         )
