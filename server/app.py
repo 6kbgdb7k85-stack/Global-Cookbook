@@ -159,7 +159,7 @@ class UserProfile(Resource):
             ]
         if "block" in request_body:
             self.user.blocking.append(
-                Recipe.query.filter(Recipe.id == int(request_body["block"])).first()
+                User.query.filter(User.id == int(request_body["block"])).first()
             )
         if "favorite" in request_body:
             self.user.favorite_recipes.append(

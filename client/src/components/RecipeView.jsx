@@ -22,6 +22,7 @@ import StarTwoToneIcon from "@mui/icons-material/StarTwoTone";
 import DeleteIcon from "@mui/icons-material/Delete";
 import isFavorite from "../common/utils/isFavoriteRecipe";
 import DialogWrapper from "../common/components/DialogWrapper";
+import isBlocked from "../common/utils/isBlocked";
 
 export default function RecipeView() {
   const [comments, setComments] = useState([]);
@@ -222,13 +223,13 @@ export default function RecipeView() {
                 </Box>
               ) : (
                 <>
-                  <Comment
+                  {!isBlocked(recipe,user)&&<Comment
                     key={"new-comment"}
                     comment={{ text: "" }}
                     canChange={true}
                     onServerUpdate={getComments}
                     isNew
-                  />
+                  />}
                   {comments.map((comment) => (
                     <Comment
                       key={comment.id}
