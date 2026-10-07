@@ -38,6 +38,7 @@ export default function RecipeView() {
   const {
     response: recipeResponse,
     loading: recipeLoading,
+    error: recipeError,
     runFetch: updateRecipe,
   } = useFetch(`recipes/${recipeId}`);
 
@@ -69,14 +70,14 @@ export default function RecipeView() {
     }
   }, []);
 
-  useEffect(()=>{
-    if(user&&!recipeId){
-      setRecipe(prevRecipe=>({
+  useEffect(() => {
+    if (user && !recipeId) {
+      setRecipe((prevRecipe) => ({
         ...prevRecipe,
-        private: user.recipe_default_private
-      }))
+        private: user.recipe_default_private,
+      }));
     }
-  },[user])
+  }, [user]);
 
   useEffect(() => {
     if (commentsResponse) {
@@ -155,95 +156,97 @@ export default function RecipeView() {
     setDialogOpen(false);
   }
 
+  if (recipeError?.action) {
+    return (
+      <>
+        <Typography variant="h5">
+          This recipe has been marked as private by its creator.
+        </Typography>
+        <Button variant="contained" onClick={() => navigate("/")}>
+          Return to Home
+        </Button>
+      </>
+    );
+  }
+
   return (
     <Box sx={{ mx: "auto", width: 0.5 }}>
-      {recipe && (
-        <>
-          <DialogWrapper
-            title={"Delete Recipe?"}
-            message={
-              "Are you sure you want to delete this recipe? This action cannot be undone."
-            }
-            onClose={handleDelete}
-            open={dialogOpen}
-          />
-          <Grid container>
-            <Grid size={1} />
-            <Grid size={"grow"} sx={{ textAlign: "center" }}>
-              <Typography variant="h4">Recipe Details</Typography>
-            </Grid>
-            <Grid size={1} sx={{ textAlign: "right" }}>
-              {recipe.user?.id === user?.id && (
-                <IconButton onClick={() => setDialogOpen(true)} color="error">
-                  <DeleteIcon />
-                </IconButton>
-              )}
-            </Grid>
+      <>
+        <DialogWrapper
+          title={"Delete Recipe?"}
+          message={
+            "Are you sure you want to delete this recipe? This action cannot be undone."
+          }
+          onClose={handleDelete}
+          open={dialogOpen}
+        />
+        <Grid container>
+          <Grid size={1} />
+          <Grid size={"grow"} sx={{ textAlign: "center" }}>
+            <Typography variant="h4">Recipe Details</Typography>
           </Grid>
-          <FormWrapper
-            fields={RECIPE_FIELDS}
-            formData={recipe || {}}
-            formErrors={{}}
-            canEdit={user?.id == recipe?.user?.id}
-            edit={edit}
-            onChange={handleChange}
-            onSubmit={handleSave}
-            setEdit={setEdit}
-          />
-          {recipe.id && (
-            <IconButton color="primary" onClick={toggleFavorite}>
-              {isFavorite(user?.id, recipe) ? (
-                <StarTwoToneIcon />
-              ) : (
-                <StarBorderIcon />
-              )}
-            </IconButton>
-          )}
-          {recipe.id && (
-            <>
-              {commentsLoading ? (
-                <Box sx={{ mt: "1rem" }}>
-                  <Stack spacing={1}>
-                    <Skeleton
-                      variant="rectangular"
-                      width={"100%"}
-                      height={75}
-                    />
-                    <Skeleton
-                      variant="rectangular"
-                      width={"100%"}
-                      height={75}
-                    />
-                    <Skeleton
-                      variant="rectangular"
-                      width={"100%"}
-                      height={75}
-                    />
-                  </Stack>
-                </Box>
-              ) : (
-                <>
-                  {!isBlocked(recipe,user)&&<Comment
+          <Grid size={1} sx={{ textAlign: "right" }}>
+            {recipe?.user?.id === user?.id && !recipeLoading && (
+              <IconButton onClick={() => setDialogOpen(true)} color="error">
+                <DeleteIcon />
+              </IconButton>
+            )}
+          </Grid>
+        </Grid>
+        <FormWrapper
+          fields={RECIPE_FIELDS}
+          formData={recipe || {}}
+          formErrors={{}}
+          canEdit={user?.id == recipe?.user?.id}
+          edit={edit}
+          onChange={handleChange}
+          onSubmit={handleSave}
+          setEdit={setEdit}
+          loading={recipeLoading}
+        />
+        {recipe?.id && !recipeLoading && (
+          <IconButton color="primary" onClick={toggleFavorite}>
+            {isFavorite(user?.id, recipe) ? (
+              <StarTwoToneIcon />
+            ) : (
+              <StarBorderIcon />
+            )}
+          </IconButton>
+        )}
+        {recipe?.id && (
+          <>
+            {commentsLoading ? (
+              <Box sx={{ mt: "1rem" }}>
+                <Stack spacing={1}>
+                  <Skeleton variant="rectangular" width={"100%"} height={75} />
+                  <Skeleton variant="rectangular" width={"100%"} height={75} />
+                  <Skeleton variant="rectangular" width={"100%"} height={75} />
+                </Stack>
+              </Box>
+            ) : (
+              <>
+                {!isBlocked(recipe, user) && (
+                  <Comment
                     key={"new-comment"}
                     comment={{ text: "" }}
                     canChange={true}
                     onServerUpdate={getComments}
                     isNew
-                  />}
-                  {comments.map((comment) => (
-                    <Comment
-                      key={comment.id}
-                      comment={comment}
-                      canChange={comment.user.id === user?.id}
-                      onServerUpdate={getComments}
-                    />
-                  ))}
-                </>
-              )}
-            </>
-          )}
-        </>
-      )}
+                  />
+                )}
+                {comments.map((comment) => (
+                  <Comment
+                    key={comment.id}
+                    comment={comment}
+                    canChange={comment.user.id === user?.id}
+                    onServerUpdate={getComments}
+                  />
+                ))}
+              </>
+            )}
+          </>
+        )}
+      </>
     </Box>
   );
 }

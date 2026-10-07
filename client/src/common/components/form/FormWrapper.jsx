@@ -14,6 +14,7 @@ export default function FormWrapper({
   noCancel = false,
   canEdit,
   setEdit = () => {},
+  loading = false,
 }) {
   const { user } = useOutletContext();
 
@@ -31,7 +32,8 @@ export default function FormWrapper({
       <Grid container spacing={1} sx={{ marginBottom: "1rem" }}>
         {fields.map((field) => (
           <Grid key={field.id + "-field"} size={field.colSpan || colSpan}>
-            {(field.visibilityRestriction !== "creator" || !formData.user ||
+            {(field.visibilityRestriction !== "creator" ||
+              !formData.user ||
               formData.user.id === user?.id) && (
               <FormField
                 field={field}
@@ -39,47 +41,52 @@ export default function FormWrapper({
                 error={formErrors[field.id]}
                 value={formData[field.id]}
                 edit={field.alwaysEdit || edit}
+                loading={loading}
               />
             )}
           </Grid>
         ))}
       </Grid>
-      {edit ? (
+      {!loading && (
         <>
-          <Button
-            key="submit-button"
-            aria-label="submit-button"
-            variant="contained"
-            type="submit"
-          >
-            {submitLabel || "Save"}
-          </Button>
-          {!noCancel ? (
-            <Button
-              key="cancel-button"
-              aria-label="cancel-button"
-              onClick={handleCancel}
-              variant="outlined"
-            >
-              Cancel
-            </Button>
+          {edit ? (
+            <>
+              <Button
+                key="submit-button"
+                aria-label="submit-button"
+                variant="contained"
+                type="submit"
+              >
+                {submitLabel || "Save"}
+              </Button>
+              {!noCancel ? (
+                <Button
+                  key="cancel-button"
+                  aria-label="cancel-button"
+                  onClick={handleCancel}
+                  variant="outlined"
+                >
+                  Cancel
+                </Button>
+              ) : (
+                <></>
+              )}
+            </>
           ) : (
-            <></>
-          )}
-        </>
-      ) : (
-        <>
-          {canEdit ? (
-            <Button
-              key="edit-button"
-              aria-label="edit-button"
-              onClick={() => setEdit(true)}
-              variant="contained"
-            >
-              Edit
-            </Button>
-          ) : (
-            <></>
+            <>
+              {canEdit ? (
+                <Button
+                  key="edit-button"
+                  aria-label="edit-button"
+                  onClick={() => setEdit(true)}
+                  variant="contained"
+                >
+                  Edit
+                </Button>
+              ) : (
+                <></>
+              )}
+            </>
           )}
         </>
       )}
