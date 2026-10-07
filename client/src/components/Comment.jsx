@@ -213,7 +213,7 @@ export default function Comment({
               )}
             </Stack>
           ) : (
-            <Button onClick={() => doAction("edit")}>Edit</Button>
+            <>{canChange&&<Button onClick={() => doAction("edit")}>Edit</Button>}</>
           )}
         </Grid>
       </Grid>
