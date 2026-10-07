@@ -1,0 +1,70 @@
+Usage: [1mpipenv[0m [OPTIONS] COMMAND [ARGS]...
+
+[1mOptions:[0m
+  --where                         Output project home information.
+  --venv                          Output virtualenv information.
+  --py                            Output Python interpreter information.
+  --envs                          Output Environment Variable options.
+  --rm                            Remove the virtualenv.
+  --bare                          Minimal output.
+  --man                           Display manpage.
+  --support                       Output diagnostic information for use in
+                                  GitHub issues.
+  --site-packages / --no-site-packages
+                                  Enable site-packages for the virtualenv.
+                                  [env var: PIPENV_SITE_PACKAGES]
+  --python TEXT                   Specify which version of Python virtualenv
+                                  should use.
+  --clear                         Clears caches (pipenv, pip).  [env var:
+                                  PIPENV_CLEAR]
+  -q, --quiet                     Quiet mode.
+  -v, --verbose                   Verbose mode.
+  --pypi-mirror TEXT              Specify a PyPI mirror.
+  --version                       Show the version and exit.
+  -h, --help                      Show this message and exit.
+
+
+Usage Examples:
+   Create a new project using Python 3.7, specifically:
+   $ [33mpipenv --python 3.7[0m
+
+   Remove project virtualenv (inferred from current directory):
+   $ [33mpipenv --rm[0m
+
+   Install all dependencies for a project (including dev):
+   $ [33mpipenv install --dev[0m
+
+   Create a lockfile containing pre-releases:
+   $ [33mpipenv lock --pre[0m
+
+   Show a graph of your installed dependencies:
+   $ [33mpipenv graph[0m
+
+   Check your installed dependencies for security vulnerabilities:
+   $ [33mpipenv check[0m
+
+   Install a local setup.py into your virtual environment/Pipfile:
+   $ [33mpipenv install -e .[0m
+
+   Use a lower-level pip command:
+   $ [33mpipenv run pip freeze[0m
+
+Commands:
+[31m[1m  check[0m         Checks for PyUp Safety security vulnerabilities and against
+                PEP 508 markers provided in Pipfile.
+[31m[1m  clean[0m         Uninstalls all packages not specified in Pipfile.lock.
+[31m[1m  graph[0m         Displays currently-installed dependency graph information.
+[35m[1m  install[0m       Installs provided packages and adds them to Pipfile, or (if no
+                packages are given), installs all packages from Pipfile.
+[32m[1m  lock[0m          Generates Pipfile.lock.
+[31m[1m  open[0m          View a given module in your editor.
+  requirements  Generate a requirements.txt from Pipfile.lock.
+[33m[1m  run[0m           Spawns a command installed into the virtualenv.
+[33m[1m  scripts[0m       Lists scripts in current environment config.
+[33m[1m  shell[0m         Spawns a shell within the virtualenv.
+[32m[1m  sync[0m          Installs all packages specified in Pipfile.lock.
+[35m[1m  uninstall[0m     Uninstalls a provided package and removes it from Pipfile.
+[32m[1m  update[0m        Runs lock, then sync.
+  upgrade       Resolves provided packages and adds them to Pipfile, or (if no
+                packages are given), merges results to Pipfile.lock
+  verify        Verify the hash in Pipfile.lock is up-to-date.
