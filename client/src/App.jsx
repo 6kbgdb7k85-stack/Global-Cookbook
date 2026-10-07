@@ -21,25 +21,25 @@ function App() {
     response: session,
     loading: sessionLoading,
     error: sessionError,
-    runFetch: getSession
+    runFetch: getSession,
   } = useFetch("me");
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  useEffect(()=>{
-    if(session){
-      setUser(session)
+  useEffect(() => {
+    if (session) {
+      setUser(session);
     }
-  },[session])
+  }, [session]);
 
   function toggleMenu(e = {}) {
     setMenuAnchor(menuAnchor ? false : e.currentTarget);
   }
 
-  function logout(){
-    navigate('/')
-    setUser(null)
-    setMenuAnchor(false)
+  function logout() {
+    navigate("/");
+    setUser(null);
+    setMenuAnchor(false);
   }
 
   return (
@@ -47,11 +47,18 @@ function App() {
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
           <Toolbar>
-            <Typography variant="h3" sx={{ flexGrow: 1 }}>
+            <Typography
+              variant="h3"
+              sx={{ flexGrow: 1 }}
+              onClick={() => navigate("/")}
+              sx={{
+                ":hover": { cursor: "pointer" },
+              }}
+            >
               Global Cookbook
             </Typography>
             {user && (
-              <>
+              <Box sx={{ textAlign: "right", flexGrow: 1 }}>
                 <IconButton color="inherit" size="large" onClick={toggleMenu}>
                   <AccountCircle fontSize="inherit" />
                 </IconButton>
@@ -60,19 +67,22 @@ function App() {
                   open={Boolean(menuAnchor)}
                   onClose={toggleMenu}
                 >
-                  <MenuItem onClick={()=>{setMenuAnchor(false);navigate('/profile')}}>
+                  <MenuItem
+                    onClick={() => {
+                      setMenuAnchor(false);
+                      navigate("/profile");
+                    }}
+                  >
                     Profile
                   </MenuItem>
-                  <MenuItem onClick={logout}>
-                    Logout
-                  </MenuItem>
+                  <MenuItem onClick={logout}>Logout</MenuItem>
                 </Menu>
-              </>
+              </Box>
             )}
           </Toolbar>
         </AppBar>
       </Box>
-      <Outlet context={{user,setUser,getSession,session}} />
+      <Outlet context={{ user, setUser, getSession, session }} />
     </>
   );
 }
