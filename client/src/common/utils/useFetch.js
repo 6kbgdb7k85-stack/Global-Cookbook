@@ -76,7 +76,7 @@ export default function useFetch(url, method = "GET", onLoad = true) {
     const searchList = Object.entries(searchParams);
     if (searchList?.length > 0) {
       compiledUrl += "?";
-      searchList.forEach((key, value) => {
+      searchList.forEach(([key, value]) => {
         compiledUrl += `&${key}=${value}`;
       });
     }
