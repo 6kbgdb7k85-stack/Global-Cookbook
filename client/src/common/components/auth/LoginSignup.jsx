@@ -72,6 +72,7 @@ export default function LoginSignup() {
   function switchMode() {
     setSignup((prevSignup) => !prevSignup);
     setFormData(initFormData);
+    setSignupError(null)
   }
 
   function compileModeSwitchMethod() {
@@ -97,10 +98,10 @@ export default function LoginSignup() {
         fields={signup ? signupFields : loginFields}
         colSpan={12}
         formData={formData}
-        formErrors={{}}
+        formErrors={signupError?.field_error||{}}
         onChange={handleChange}
         onSubmit={handleSubmit}
-        submitLabel={"Login"}
+        submitLabel={signup?"Create Account":"Login"}
         edit={true}
         noCancel
       />

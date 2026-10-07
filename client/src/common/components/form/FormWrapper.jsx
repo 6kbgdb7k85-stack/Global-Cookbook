@@ -1,4 +1,4 @@
-import { Box, Button, Grid } from "@mui/material";
+import { Box, Button, Grid, List, ListItem, ListItemText } from "@mui/material";
 import FormField from "./FormField";
 import { useOutletContext } from "react-router";
 
@@ -27,6 +27,8 @@ export default function FormWrapper({
     onSubmit(e, true);
   }
 
+  
+
   return (
     <Box component={"form"} noValidate onSubmit={handleSubmit}>
       <Grid container spacing={1} sx={{ marginBottom: "1rem" }}>
@@ -38,7 +40,11 @@ export default function FormWrapper({
               <FormField
                 field={field}
                 onChange={onChange}
-                error={formErrors[field.id]}
+                error={formErrors[field.id]&&(<List>{(formErrors[field.id]).map((error,index)=>(
+                  <ListItem key={`${field.id}-error-${index}`}>
+                    <ListItemText primary={error}/>
+                  </ListItem>
+                ))}</List>)}
                 value={formData[field.id]}
                 edit={field.alwaysEdit || edit}
                 loading={loading}
