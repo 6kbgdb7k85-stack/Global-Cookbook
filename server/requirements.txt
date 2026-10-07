@@ -1,70 +1,33 @@
-Usage: [1mpipenv[0m [OPTIONS] COMMAND [ARGS]...
-
-[1mOptions:[0m
-  --where                         Output project home information.
-  --venv                          Output virtualenv information.
-  --py                            Output Python interpreter information.
-  --envs                          Output Environment Variable options.
-  --rm                            Remove the virtualenv.
-  --bare                          Minimal output.
-  --man                           Display manpage.
-  --support                       Output diagnostic information for use in
-                                  GitHub issues.
-  --site-packages / --no-site-packages
-                                  Enable site-packages for the virtualenv.
-                                  [env var: PIPENV_SITE_PACKAGES]
-  --python TEXT                   Specify which version of Python virtualenv
-                                  should use.
-  --clear                         Clears caches (pipenv, pip).  [env var:
-                                  PIPENV_CLEAR]
-  -q, --quiet                     Quiet mode.
-  -v, --verbose                   Verbose mode.
-  --pypi-mirror TEXT              Specify a PyPI mirror.
-  --version                       Show the version and exit.
-  -h, --help                      Show this message and exit.
-
-
-Usage Examples:
-   Create a new project using Python 3.7, specifically:
-   $ [33mpipenv --python 3.7[0m
-
-   Remove project virtualenv (inferred from current directory):
-   $ [33mpipenv --rm[0m
-
-   Install all dependencies for a project (including dev):
-   $ [33mpipenv install --dev[0m
-
-   Create a lockfile containing pre-releases:
-   $ [33mpipenv lock --pre[0m
-
-   Show a graph of your installed dependencies:
-   $ [33mpipenv graph[0m
-
-   Check your installed dependencies for security vulnerabilities:
-   $ [33mpipenv check[0m
-
-   Install a local setup.py into your virtual environment/Pipfile:
-   $ [33mpipenv install -e .[0m
-
-   Use a lower-level pip command:
-   $ [33mpipenv run pip freeze[0m
-
-Commands:
-[31m[1m  check[0m         Checks for PyUp Safety security vulnerabilities and against
-                PEP 508 markers provided in Pipfile.
-[31m[1m  clean[0m         Uninstalls all packages not specified in Pipfile.lock.
-[31m[1m  graph[0m         Displays currently-installed dependency graph information.
-[35m[1m  install[0m       Installs provided packages and adds them to Pipfile, or (if no
-                packages are given), installs all packages from Pipfile.
-[32m[1m  lock[0m          Generates Pipfile.lock.
-[31m[1m  open[0m          View a given module in your editor.
-  requirements  Generate a requirements.txt from Pipfile.lock.
-[33m[1m  run[0m           Spawns a command installed into the virtualenv.
-[33m[1m  scripts[0m       Lists scripts in current environment config.
-[33m[1m  shell[0m         Spawns a shell within the virtualenv.
-[32m[1m  sync[0m          Installs all packages specified in Pipfile.lock.
-[35m[1m  uninstall[0m     Uninstalls a provided package and removes it from Pipfile.
-[32m[1m  update[0m        Runs lock, then sync.
-  upgrade       Resolves provided packages and adds them to Pipfile, or (if no
-                packages are given), merges results to Pipfile.lock
-  verify        Verify the hash in Pipfile.lock is up-to-date.
+-i https://pypi.org/simple
+alembic==1.20.0; python_version >= '3.10'
+aniso8601==10.0.1
+bcrypt==5.0.0; python_version >= '3.8'
+blinker==1.9.0; python_version >= '3.9'
+click==8.5.0; python_version >= '3.10'
+faker==40.40.0; python_version >= '3.10'
+flask==3.1.3; python_version >= '3.9'
+flask-bcrypt==1.0.1
+flask-cors==6.0.5; python_version >= '3.9' and python_version < '4.0'
+flask-jwt-extended==4.7.4; python_version >= '3.10' and python_version < '4'
+flask-migrate==4.1.0; python_version >= '3.6'
+flask-restful==0.3.10
+flask-sqlalchemy==3.1.1; python_version >= '3.8'
+gunicorn==26.2.0; python_version >= '3.10'
+iniconfig==2.3.0; python_version >= '3.10'
+itsdangerous==2.2.0; python_version >= '3.8'
+jinja2==3.1.6; python_version >= '3.7'
+mako==1.4.3; python_version >= '3.10'
+markupsafe==3.0.3; python_version >= '3.9'
+marshmallow==4.3.1; python_version >= '3.10'
+packaging==26.3; python_version >= '3.9'
+pluggy==1.6.0; python_version >= '3.9'
+psycopg[binary]==3.3.6; python_version >= '3.10'
+psycopg-binary==3.3.6
+pygments==2.21.0; python_version >= '3.9'
+pyjwt==2.15.1; python_version >= '3.9'
+pytest==9.1.1; python_version >= '3.10'
+pytz==2026.4
+six==1.17.0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'
+sqlalchemy==2.1.1; python_version >= '3.11'
+typing-extensions==4.16.0; python_version >= '3.9'
+werkzeug==3.1.9; python_version >= '3.9'
