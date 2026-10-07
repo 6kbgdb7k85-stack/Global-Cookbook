@@ -4,8 +4,8 @@ from models import User
 
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
-    username = fields.String(required=True,error_messages={"required":"Username is required"})
-    email = fields.Email(required=True,error_messages={"required":"Email is required"})
+    username = fields.String(required=True,error_messages={"required":"Username is required"}, validate=validate.Length(min=1,error="Name is required."))
+    email = fields.Email(required=True,error_messages={"required":"Email is required"}, validate=validate.Length(min=1,error="Name is required."))
     password = fields.String(
         load_only=True,
         validate=[
@@ -60,7 +60,7 @@ class UserSchema(Schema):
 
 class RecipeSchema(Schema):
     id = fields.Int(dump_only=True)
-    name = fields.String(required=True)
+    name = fields.String(required=True, validate=validate.Length(min=1,error="Name is required."))
     description = fields.String()
     ingredients = fields.String()
     instructions = fields.String()
@@ -76,7 +76,7 @@ class RecipeSchema(Schema):
 
 class CommentSchema(Schema):
     id = fields.Int(dump_only=True)
-    text = fields.String()
+    text = fields.String(required=True, validate=validate.Length(min=1,error="Comment cannot be empty."))
     created_time = fields.DateTime(dump_only=True)
 
     recipe = fields.Nested(lambda: RecipeSchema(exclude=("comments", "user")))

@@ -39,12 +39,14 @@ export default function RecipeView() {
     response: recipeResponse,
     loading: recipeLoading,
     error: recipeError,
+    setError: setRecipeError,
     runFetch: updateRecipe,
   } = useFetch(`recipes/${recipeId}`);
 
   const {
     response: createRecipeResponse,
     loading: createRecipeLoading,
+    error: createRecipeError,
     runFetch: createRecipe,
   } = useFetch("recipes", "POST", false);
 
@@ -89,6 +91,7 @@ export default function RecipeView() {
     if (recipeResponse) {
       setRecipe(recipeResponse);
       setEdit(false);
+      setRecipeError(null);
     }
   }, [recipeResponse]);
 
@@ -196,7 +199,11 @@ export default function RecipeView() {
         <FormWrapper
           fields={RECIPE_FIELDS}
           formData={recipe || {}}
-          formErrors={{}}
+          formErrors={
+            recipe?.id
+              ? recipeError?.field_error || {}
+              : createRecipeError?.field_error || {}
+          }
           canEdit={user?.id == recipe?.user?.id}
           edit={edit}
           onChange={handleChange}

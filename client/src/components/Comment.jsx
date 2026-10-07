@@ -45,13 +45,16 @@ export default function Comment({
   const {
     response: updateDeleteCommentResponse,
     runFetch: updateDeleteComment,
+    error: updateCommentError,
+    setError: setUpdateCommentError,
   } = useFetch(`comments/${comment.id}`, "PATCH", false);
 
-  const { response: createCommentResponse, runFetch: createComment } = useFetch(
-    `recipes/${recipeId}/comments`,
-    "POST",
-    false,
-  );
+  const {
+    response: createCommentResponse,
+    runFetch: createComment,
+    error: createCommentError,
+    setError: setCreateCommentError,
+  } = useFetch(`recipes/${recipeId}/comments`, "POST", false);
 
   const {
     response: blockUserResponse,
@@ -64,6 +67,7 @@ export default function Comment({
       if (updateDeleteCommentResponse?.id) {
         setEdit(false);
         setCommentText(updateDeleteCommentResponse.text);
+        setUpdateCommentError(null);
       } else {
         onServerUpdate();
       }
@@ -74,6 +78,7 @@ export default function Comment({
     if (createCommentResponse) {
       onServerUpdate();
       setCommentText(comment.text);
+      setCreateCommentError(null);
     }
   }, [createCommentResponse]);
 
@@ -192,7 +197,7 @@ export default function Comment({
             value={commentText}
             onChange={handleChange}
             edit={edit}
-            helper
+            error={isNew ? createCommentError?.field_error?.text : updateCommentError?.field_error?.text}
           />
         </Grid>
         <Grid size={1}>
@@ -213,7 +218,11 @@ export default function Comment({
               )}
             </Stack>
           ) : (
-            <>{canChange&&<Button onClick={() => doAction("edit")}>Edit</Button>}</>
+            <>
+              {canChange && (
+                <Button onClick={() => doAction("edit")}>Edit</Button>
+              )}
+            </>
           )}
         </Grid>
       </Grid>
