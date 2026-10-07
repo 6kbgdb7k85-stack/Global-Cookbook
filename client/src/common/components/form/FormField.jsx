@@ -2,6 +2,7 @@ import {
   FormControlLabel,
   IconButton,
   InputAdornment,
+  Skeleton,
   Switch,
   TextField,
   Typography,
@@ -17,6 +18,7 @@ export default function FormField({
   error,
   onBlur = () => {},
   edit = false,
+  loading
 }) {
   const [showPass, setShowPass] = useState(false);
 
@@ -43,6 +45,10 @@ export default function FormField({
     onBlur,
     required: field.required,
   };
+
+  if (loading){
+    return <Skeleton variant="rectangle" width={"100%"} height={25}/>
+  }
 
   switch (field.type) {
     case FIELD_TYPES.PASSWORD:

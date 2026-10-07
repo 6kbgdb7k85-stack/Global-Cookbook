@@ -72,8 +72,8 @@ def check_permission():
         return None
     if request.endpoint not in USER_ENDPOINTS:
         return None
-    if request.method == "GET":
-        return None
+    # if request.method == "GET":
+    #     return None
     user_id = get_jwt_identity()
     user = User.query.filter(User.id == user_id).first()
     resource_name = request.endpoint
@@ -86,7 +86,11 @@ def check_permission():
         abort(
             404, description=f"{request.endpoint.capitalize()} {entity_id} not found."
         )
+    if request.method=="GET" and (not hasattr(entity,"private") or not entity.private == True):
+        return None
     if entity.user != user:
+        if request.method=="GET":
+            return make_response({ERROR_TYPES.ERROR:"Forbidden","action":"render-access-denied"},403)
         return make_response({ERROR_TYPES.ERROR: "Forbidden"}, 403)
 
 
