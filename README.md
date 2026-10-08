@@ -34,7 +34,7 @@
 - ~~Add way for user to return to recipe list without using the browser back button or manually adjusting URL~~
 - ~~UserProfile Component~~
 - ~~Search Recipes~~
-- prevent blocked user from adding comments
+- ~~prevent blocked user from adding comments~~
 - Styling
 - ability to change password
 - ability to change username
