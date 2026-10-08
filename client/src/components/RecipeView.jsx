@@ -132,6 +132,9 @@ export default function RecipeView() {
   }
 
   function handleChange({ name, value }) {
+    if (name === "private" && !edit) {
+      updateRecipe({ private: value, method: "PATCH" });
+    }
     setRecipe((prevRecipe) => ({
       ...prevRecipe,
       [name]: value,
