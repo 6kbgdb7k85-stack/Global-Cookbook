@@ -38,8 +38,8 @@ def handle_validation_error(error):
 @app.errorhandler(IntegrityError)
 def handle_integrity_error(error):
     db.session.rollback()
-    app.logger(f"IntegrityError:")
-    app.logger(error)
+    app.logger.exception(f"IntegrityError:")
+    app.logger.exception(error)
     return make_response(
         {ERROR_TYPES.ERROR: "Provided data violates database constraints."}, 400
     )
@@ -52,8 +52,8 @@ def handle_404(e):
 
 @app.errorhandler(InternalServerError)
 def handle_500(e):
-    app.logger(f"ServerError:")
-    app.logger(e)
+    app.logger.exception(f"ServerError:")
+    app.logger.exception(e)
     return make_response(
         {ERROR_TYPES.ERROR: "Something went wrong on the server."}, 500
     )
