@@ -1,5 +1,6 @@
 import {
   Button,
+  keyframes,
   Link,
   TextField,
   Typography,
@@ -11,6 +12,7 @@ import FormWrapper from "../form/FormWrapper";
 import { loginFields, signupFields } from "./loginFields";
 import compilePayload from "../../utils/compilePayload";
 import useFetch from "../../utils/useFetch";
+import capitalizeWord from "../../utils/capitalizeWord";
 
 const initFormData = {
   username: "",
@@ -22,6 +24,7 @@ const initFormData = {
 export default function LoginSignup() {
   const [signup, setSignup] = useState(false);
   const [formData, setFormData] = useState(initFormData);
+  const [formErrors, setFormErrors] = useState(null);
   const { setUser } = useOutletContext();
 
   const {
@@ -39,13 +42,6 @@ export default function LoginSignup() {
     runFetch: runSignup,
   } = useFetch("signup", "POST", false);
 
-  function handleChange({name,value}) {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
-  }
-
   useEffect(() => {
     if (loginResponse) {
       setUser(loginResponse.user);
@@ -60,6 +56,71 @@ export default function LoginSignup() {
     }
   }, [signupResponse]);
 
+  useEffect(() => {
+    if (signupError) {
+      setFormErrors(signupError.field_error);
+    }
+  }, [signupError]);
+
+  useEffect(() => {
+    if (loginError) {
+      if (loginError.field_error) {
+        setFormErrors(loginError.field_error);
+      } else {
+        console.log(loginError);
+      }
+    }
+  }, [loginError]);
+
+  function handleChange({ name, value }) {
+    const field = signup
+      ? signupFields.find((field) => field.id === name)
+      : loginFields.find((field) => field.id === name);
+    const newFormData = {...formData}
+    newFormData[name]=value
+    setFormData(newFormData);
+    validateForm(newFormData, field, { name, value });
+  }
+
+  function validateField(field, value, formData) {
+    const errors = [];
+    if (field.required && !value) {
+      errors.push(`${capitalizeWord(field.id)} is required.`);
+    }
+    if (field.validation && !field.validation(formData, value)) {
+      errors.push(field.validationMessage || "Invalid value.");
+    }
+    return errors.length > 0 ? errors : null;
+  }
+
+  function validateForm(formData, field, changeEvent) {
+    const newErrors = { ...formErrors };
+    const fields = signup ? signupFields : loginFields;
+    fields.forEach((field) => {
+      if (field.id == changeEvent.name) {
+        newErrors[field.id]=validateField(field,changeEvent.value,formData)
+      }else{
+        newErrors[field.id]=validateField(field,formData[field.id],formData)
+      }
+    });
+    // if (field.required) {
+    //   newErrors[field.id] = newValue
+    //     ? null
+    //     : [`${capitalizeWord(field.id)} is required`];
+    // }
+    // if (field.validation) {
+    //   newErrors[field.id] = field.validation(formData, newValue)
+    //     ? null
+    //     : [field.validationMessage || "Field invalid"];
+    // }
+    Object.entries(newErrors).forEach(([key, val]) => {
+      if (val === null) {
+        delete newErrors[key];
+      }
+    });
+    setFormErrors(newErrors);
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
     if (signup) {
@@ -72,7 +133,7 @@ export default function LoginSignup() {
   function switchMode() {
     setSignup((prevSignup) => !prevSignup);
     setFormData(initFormData);
-    setSignupError(null)
+    setFormErrors({})
   }
 
   function compileModeSwitchMethod() {
@@ -98,10 +159,10 @@ export default function LoginSignup() {
         fields={signup ? signupFields : loginFields}
         colSpan={12}
         formData={formData}
-        formErrors={signupError?.field_error||{}}
+        formErrors={formErrors}
         onChange={handleChange}
         onSubmit={handleSubmit}
-        submitLabel={signup?"Create Account":"Login"}
+        submitLabel={signup ? "Create Account" : "Login"}
         edit={true}
         noCancel
       />

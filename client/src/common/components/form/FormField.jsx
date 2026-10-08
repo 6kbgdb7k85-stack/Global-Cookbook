@@ -23,7 +23,6 @@ export default function FormField({
   const [showPass, setShowPass] = useState(false);
 
   function handleChange(e) {
-    console.log(e.target.checked);
     onChange({
       name: e.target.name,
       value: e.target.type === "checkbox" ? e.target.checked : e.target.value,
