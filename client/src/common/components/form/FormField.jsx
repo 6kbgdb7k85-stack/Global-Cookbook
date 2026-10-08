@@ -7,7 +7,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { FIELD_TYPES, MUI_TYPOGRAPHY_SIZES } from "../../constants";
+import { FIELD_TYPES } from "../../constants";
 import { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
