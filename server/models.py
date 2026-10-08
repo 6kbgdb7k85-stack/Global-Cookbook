@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy.orm import validates, declared_attr
+from sqlalchemy.orm import declared_attr
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from config import db, bcrypt
