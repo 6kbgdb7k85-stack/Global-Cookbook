@@ -129,7 +129,7 @@ class Signup(Resource):
 
 class CheckSession(Resource):
     def get(self):
-        user = User.query.filter(User.id == get_jwt_identity()).first()
+        user = User.query.filter(User.id == int(get_jwt_identity())).first()
         return make_response(UserSchema().dump(user), 200)
 
 
