@@ -1,5 +1,4 @@
-import os
-from flask import request, make_response, jsonify, redirect, url_for, abort
+from flask import request, make_response, jsonify, abort
 from flask_jwt_extended import (
     verify_jwt_in_request,
     get_jwt_identity,
