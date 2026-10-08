@@ -44,6 +44,12 @@ export default function RecipeList() {
     }
   }, [user]);
 
+  useEffect(()=>{
+    if(searchParams.size==0){
+      changeSearchMode()
+    }
+  },[searchParams])
+
   useEffect(() => {
     if (favoriteRecipeResponse) {
       searchRecipes();
