@@ -1,23 +1,6 @@
 import { createTheme } from "@mui/material";
 
 const cookbookOptions = {
-  //   palette: {
-  //     mode: 'light',
-  //     primary: {
-  //       main: '#72536f',
-  //     },
-  //     secondary: {
-  //       main: '#52677a',
-  //     },
-  //     text: {
-  //       primary: '#29272a',
-  //       secondary: '#706b6e',
-  //     },
-  //     background: {
-  //       default: '#faf7f1',
-  //     },
-  //     divider: '#e4dfd8',
-  //   },
   palette: {
     mode: "light",
     primary: {
