@@ -25,5 +25,7 @@ export const signupFields = [
     type: FIELD_TYPES.PASSWORD,
     required: true,
     uiOnly: true,
+    validation: (formData, value) => formData.password == value,
+    validationMessage: "Passwords must match."
   },
 ];
