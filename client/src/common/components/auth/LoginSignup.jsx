@@ -1,18 +1,12 @@
 import {
-  Button,
-  keyframes,
-  Link,
-  TextField,
-  Typography,
-  useFormControl,
+  Link, Typography
 } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router";
 import FormWrapper from "../form/FormWrapper";
 import { loginFields, signupFields } from "./loginFields";
 import compilePayload from "../../utils/compilePayload";
 import useFetch from "../../utils/useFetch";
-import capitalizeWord from "../../utils/capitalizeWord";
 import { ALERT_TIME } from "../../constants";
 import validateForm from "../../utils/validateForm";
 

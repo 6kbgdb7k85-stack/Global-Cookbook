@@ -1,5 +1,4 @@
 import { AccountCircle } from "@mui/icons-material";
-import MenuIcon from "@mui/icons-material/Menu";
 import {
   AppBar,
   Box,
@@ -9,8 +8,7 @@ import {
   MenuItem,
   ThemeProvider,
   Toolbar,
-  Typography,
-  useTheme,
+  Typography
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
