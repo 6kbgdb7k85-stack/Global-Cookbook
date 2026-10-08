@@ -178,7 +178,7 @@ class UserProfile(Resource):
 
 class RecipeList(Resource):
     def get(self):
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         search_text = request.args.get("text")
         search_mode = request.args.get("mode")
         recipes = Recipe.query.filter(
