@@ -23,15 +23,23 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import isFavorite from "../common/utils/isFavoriteRecipe";
 import DialogWrapper from "../common/components/DialogWrapper";
 import isBlocked from "../common/utils/isBlocked";
+import validateForm from "../common/utils/validateForm";
 
 export default function RecipeView() {
+  const { user } = useOutletContext();
+
   const [comments, setComments] = useState([]);
   const [edit, setEdit] = useState(false);
-  const [recipe, setRecipe] = useState(null);
+  const [recipe, setRecipe] = useState({
+    name: "",
+    description: "",
+    ingredients: "",
+    instructions: "",
+    private: false,
+  });
+  const [recipeFormErrors, setRecipeFormErrors] = useState({});
   const [dialogOpen, setDialogOpen] = useState(false);
   const { recipeId } = useParams();
-
-  const { user } = useOutletContext();
 
   const navigate = useNavigate();
 
@@ -96,6 +104,18 @@ export default function RecipeView() {
   }, [recipeResponse]);
 
   useEffect(() => {
+    if (recipeError?.field_error) {
+      setRecipeFormErrors(recipeError.field_error);
+    }
+  }, [recipeError]);
+
+  useEffect(() => {
+    if (createRecipeError?.field_error) {
+      setRecipeFormErrors(createRecipeError.field_error);
+    }
+  }, [createRecipeError]);
+
+  useEffect(() => {
     if (favoriteRecipeResponse) {
       updateRecipe();
     }
@@ -135,10 +155,11 @@ export default function RecipeView() {
     if (name === "private" && !edit) {
       updateRecipe({ private: value, method: "PATCH" });
     }
-    setRecipe((prevRecipe) => ({
-      ...prevRecipe,
-      [name]: value,
-    }));
+    const newRecipe = { ...recipe, [name]: value };
+    setRecipe(newRecipe);
+    setRecipeFormErrors(
+      validateForm(newRecipe, RECIPE_FIELDS, { name, value }),
+    );
   }
 
   function toggleFavorite() {
@@ -177,86 +198,82 @@ export default function RecipeView() {
 
   return (
     <Box sx={{ mx: "auto", width: 0.5 }}>
-      <>
-        <DialogWrapper
-          title={"Delete Recipe?"}
-          message={
-            "Are you sure you want to delete this recipe? This action cannot be undone."
-          }
-          onClose={handleDelete}
-          open={dialogOpen}
-        />
-        <Grid container>
-          <Grid size={1} />
-          <Grid size={"grow"} sx={{ textAlign: "center" }}>
-            <Typography variant="h4">Recipe Details</Typography>
-          </Grid>
-          <Grid size={1} sx={{ textAlign: "right" }}>
-            {recipe?.user?.id === user?.id && !recipeLoading && (
-              <IconButton onClick={() => setDialogOpen(true)} color="error">
-                <DeleteIcon />
-              </IconButton>
-            )}
-          </Grid>
+      <DialogWrapper
+        title={"Delete Recipe?"}
+        message={
+          "Are you sure you want to delete this recipe? This action cannot be undone."
+        }
+        onClose={handleDelete}
+        open={dialogOpen}
+      />
+      <Grid container>
+        <Grid size={1} />
+        <Grid size={"grow"} sx={{ textAlign: "center" }}>
+          <Typography variant="h4">Recipe Details</Typography>
         </Grid>
+        <Grid size={1} sx={{ textAlign: "right" }}>
+          {recipe?.user?.id === user?.id && !recipeLoading && (
+            <IconButton onClick={() => setDialogOpen(true)} color="error">
+              <DeleteIcon />
+            </IconButton>
+          )}
+        </Grid>
+      </Grid>
+      {user && (
         <FormWrapper
           fields={RECIPE_FIELDS}
           formData={recipe || {}}
-          formErrors={
-            recipe?.id
-              ? recipeError?.field_error || {}
-              : createRecipeError?.field_error || {}
-          }
-          canEdit={user?.id == recipe?.user?.id}
+          formErrors={recipeFormErrors}
+          canEdit={user.id == recipe?.user?.id}
           edit={edit}
           onChange={handleChange}
           onSubmit={handleSave}
           setEdit={setEdit}
           loading={recipeLoading}
         />
-        {recipe?.id && !recipeLoading && (
-          <IconButton color="primary" onClick={toggleFavorite}>
-            {isFavorite(user?.id, recipe) ? (
-              <StarTwoToneIcon />
-            ) : (
-              <StarBorderIcon />
-            )}
-          </IconButton>
-        )}
-        {recipe?.id && (
-          <>
-            {commentsLoading ? (
-              <Box sx={{ mt: "1rem" }}>
-                <Stack spacing={1}>
-                  <Skeleton variant="rectangular" width={"100%"} height={75} />
-                  <Skeleton variant="rectangular" width={"100%"} height={75} />
-                  <Skeleton variant="rectangular" width={"100%"} height={75} />
-                </Stack>
-              </Box>
-            ) : (
-              <>
-                {!isBlocked(recipe, user) && (
-                  <Comment
-                    key={"new-comment"}
-                    comment={{ text: "" }}
-                    canChange={true}
-                    onServerUpdate={getComments}
-                    isNew
-                  />
-                )}
-                {comments.map((comment) => (
-                  <Comment
-                    key={comment.id}
-                    comment={comment}
-                    canChange={comment.user.id === user?.id}
-                    onServerUpdate={getComments}
-                  />
-                ))}
-              </>
-            )}
-          </>
-        )}
-      </>
+      )}
+      {recipe?.id && !recipeLoading && (
+        <IconButton color="primary" onClick={toggleFavorite}>
+          {isFavorite(user?.id, recipe) ? (
+            <StarTwoToneIcon />
+          ) : (
+            <StarBorderIcon />
+          )}
+        </IconButton>
+      )}
+      {recipe?.id && (
+        <>
+          {commentsLoading ? (
+            <Box sx={{ mt: "1rem" }}>
+              <Stack spacing={1}>
+                <Skeleton variant="rectangular" width={"100%"} height={75} />
+                <Skeleton variant="rectangular" width={"100%"} height={75} />
+                <Skeleton variant="rectangular" width={"100%"} height={75} />
+              </Stack>
+            </Box>
+          ) : (
+            <>
+              {!isBlocked(recipe, user) && (
+                <Comment
+                  key={"new-comment"}
+                  comment={{ text: "" }}
+                  canChange={true}
+                  onServerUpdate={getComments}
+                  isNew
+                />
+              )}
+              {comments.map((comment) => (
+                <Comment
+                  key={comment.id}
+                  comment={comment}
+                  canChange={comment.user.id === user?.id}
+                  onServerUpdate={getComments}
+                />
+              ))}
+            </>
+          )}
+        </>
+      )}
     </Box>
   );
 }

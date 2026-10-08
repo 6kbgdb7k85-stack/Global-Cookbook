@@ -14,6 +14,7 @@ import compilePayload from "../../utils/compilePayload";
 import useFetch from "../../utils/useFetch";
 import capitalizeWord from "../../utils/capitalizeWord";
 import { ALERT_TIME } from "../../constants";
+import validateForm from "../../utils/validateForm";
 
 const initFormData = {
   username: "",
@@ -85,40 +86,7 @@ export default function LoginSignup() {
     const newFormData = { ...formData };
     newFormData[name] = value;
     setFormData(newFormData);
-    validateForm(newFormData, field, { name, value });
-  }
-
-  function validateField(field, value, formData) {
-    const errors = [];
-    if (field.required && !value) {
-      errors.push(`${capitalizeWord(field.id)} is required.`);
-    }
-    if (field.validation && !field.validation(formData, value)) {
-      errors.push(field.validationMessage || "Invalid value.");
-    }
-    return errors.length > 0 ? errors : null;
-  }
-
-  function validateForm(formData, field, changeEvent) {
-    const newErrors = { ...formErrors };
-    const fields = signup ? signupFields : loginFields;
-    fields.forEach((field) => {
-      if (field.id == changeEvent.name) {
-        newErrors[field.id] = validateField(field, changeEvent.value, formData);
-      } else {
-        newErrors[field.id] = validateField(
-          field,
-          formData[field.id],
-          formData,
-        );
-      }
-    });
-    Object.entries(newErrors).forEach(([key, val]) => {
-      if (val === null) {
-        delete newErrors[key];
-      }
-    });
-    setFormErrors(newErrors);
+    setFormErrors(validateForm(newFormData, signup ? signupFields : loginFields, { name, value }));
   }
 
   function handleSubmit(e) {
