@@ -38,7 +38,6 @@ def handle_validation_error(error):
 @app.errorhandler(IntegrityError)
 def handle_integrity_error(error):
     db.session.rollback()
-    app.logger.exception(f"IntegrityError:")
     app.logger.exception(error)
     return make_response(
         {ERROR_TYPES.ERROR: "Provided data violates database constraints."}, 400
@@ -52,7 +51,6 @@ def handle_404(e):
 
 @app.errorhandler(InternalServerError)
 def handle_500(e):
-    app.logger.exception(f"ServerError:")
     app.logger.exception(e)
     return make_response(
         {ERROR_TYPES.ERROR: "Something went wrong on the server."}, 500
@@ -74,7 +72,7 @@ def check_permission():
     if request.endpoint not in USER_ENDPOINTS:
         return None
     user_id = get_jwt_identity()
-    user = User.query.filter(User.id == user_id).first()
+    user = User.query.filter(User.id == int(user_id)).first()
     resource_name = request.endpoint
     entity_id = request.view_args.get(f"{resource_name}_id")
     resource = USER_RESOURCES.get(resource_name, None)
@@ -138,7 +136,7 @@ class CheckSession(Resource):
 class UserProfile(Resource):
     def dispatch_request(self, *args, **kwargs):
         user_id = kwargs["user_id"]
-        self.user = User.query.filter(User.id == user_id).first()
+        self.user = User.query.filter(User.id == int(user_id)).first()
         if self.user is None:
             abort(404, description=f"User {user_id} not found")
         return super().dispatch_request(*args, **kwargs)
@@ -187,7 +185,7 @@ class RecipeList(Resource):
             Recipe.private != True or Recipe.user_id == user_id
         )
         if search_mode == "fave":
-            recipes = recipes.filter(Recipe.favorite_users.any(User.id == user_id))
+            recipes = recipes.filter(Recipe.favorite_users.any(User.id == int(user_id)))
         elif search_mode == "own":
             recipes = recipes.filter(Recipe.user_id == user_id)
         if search_text:
@@ -204,7 +202,7 @@ class RecipeList(Resource):
 
     def post(self):
         user_id = get_jwt_identity()
-        user = User.query.filter(User.id == user_id).first()
+        user = User.query.filter(User.id == int(user_id)).first()
         validated_recipe = RecipeSchema().load(request.get_json(), unknown=EXCLUDE)
         recipe = Recipe(**validated_recipe)
         recipe.user = user
@@ -243,7 +241,7 @@ class RecipeView(Resource):
 class CommentList(Resource):
     def get(self, recipe_id):
         user_id = get_jwt_identity()
-        user = User.query.filter(User.id == user_id).first()
+        user = User.query.filter(User.id == int(user_id)).first()
         blocked_ids = [blocked_user.id for blocked_user in user.blocking]
         comments = (
             Comment.query.filter(Comment.recipe_id == recipe_id)
