@@ -12,10 +12,12 @@ import {
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 import useFetch from "./common/utils/useFetch";
+import AlertWrapper from "./common/components/AlertWrapper";
 
 function App() {
   const [user, setUser] = useState(null);
   const [menuAnchor, setMenuAnchor] = useState(null);
+  const [alerts, setAlerts] = useState([]);
 
   const {
     response: session,
@@ -31,6 +33,26 @@ function App() {
       setUser(session);
     }
   }, [session]);
+
+  useEffect(() => {
+    if (alerts.length === 0) return;
+    const intervalId = setInterval(() => {
+      setAlerts((prevState) =>
+        prevState
+          .map((alert) => ({
+            ...alert,
+            timeRemaining: alert.timeRemaining - 1,
+          }))
+          .filter((alert) => alert.timeRemaining > 0),
+      );
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [alerts.length]);
+
+  function addAlert(alert){
+    setAlerts(prevAlerts=>[...prevAlerts,alert])
+  }
 
   function toggleMenu(e = {}) {
     setMenuAnchor(menuAnchor ? false : e.currentTarget);
@@ -82,7 +104,14 @@ function App() {
           </Toolbar>
         </AppBar>
       </Box>
-      <Outlet context={{ user, setUser, getSession, session }} />
+      {alerts.map((alert) => (
+        <AlertWrapper
+          key={"alert-" + alert.id}
+          severity={alert.severity}
+          message={alert.message}
+        />
+      ))}
+      <Outlet context={{ user, setUser, getSession, session, addAlert }} />
     </>
   );
 }

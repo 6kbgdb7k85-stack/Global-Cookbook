@@ -13,6 +13,7 @@ import { loginFields, signupFields } from "./loginFields";
 import compilePayload from "../../utils/compilePayload";
 import useFetch from "../../utils/useFetch";
 import capitalizeWord from "../../utils/capitalizeWord";
+import { ALERT_TIME } from "../../constants";
 
 const initFormData = {
   username: "",
@@ -25,7 +26,7 @@ export default function LoginSignup() {
   const [signup, setSignup] = useState(false);
   const [formData, setFormData] = useState(initFormData);
   const [formErrors, setFormErrors] = useState(null);
-  const { setUser } = useOutletContext();
+  const { setUser, addAlert } = useOutletContext();
 
   const {
     response: loginResponse,
@@ -67,7 +68,12 @@ export default function LoginSignup() {
       if (loginError.field_error) {
         setFormErrors(loginError.field_error);
       } else {
-        console.log(loginError);
+        addAlert({
+          severity: "error",
+          message: loginError.alert_error,
+          id: crypto.randomUUID(),
+          timeRemaining: ALERT_TIME,
+        });
       }
     }
   }, [loginError]);
@@ -76,8 +82,8 @@ export default function LoginSignup() {
     const field = signup
       ? signupFields.find((field) => field.id === name)
       : loginFields.find((field) => field.id === name);
-    const newFormData = {...formData}
-    newFormData[name]=value
+    const newFormData = { ...formData };
+    newFormData[name] = value;
     setFormData(newFormData);
     validateForm(newFormData, field, { name, value });
   }
@@ -98,21 +104,15 @@ export default function LoginSignup() {
     const fields = signup ? signupFields : loginFields;
     fields.forEach((field) => {
       if (field.id == changeEvent.name) {
-        newErrors[field.id]=validateField(field,changeEvent.value,formData)
-      }else{
-        newErrors[field.id]=validateField(field,formData[field.id],formData)
+        newErrors[field.id] = validateField(field, changeEvent.value, formData);
+      } else {
+        newErrors[field.id] = validateField(
+          field,
+          formData[field.id],
+          formData,
+        );
       }
     });
-    // if (field.required) {
-    //   newErrors[field.id] = newValue
-    //     ? null
-    //     : [`${capitalizeWord(field.id)} is required`];
-    // }
-    // if (field.validation) {
-    //   newErrors[field.id] = field.validation(formData, newValue)
-    //     ? null
-    //     : [field.validationMessage || "Field invalid"];
-    // }
     Object.entries(newErrors).forEach(([key, val]) => {
       if (val === null) {
         delete newErrors[key];
@@ -133,7 +133,7 @@ export default function LoginSignup() {
   function switchMode() {
     setSignup((prevSignup) => !prevSignup);
     setFormData(initFormData);
-    setFormErrors({})
+    setFormErrors({});
   }
 
   function compileModeSwitchMethod() {
