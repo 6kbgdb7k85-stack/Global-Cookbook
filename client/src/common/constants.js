@@ -62,9 +62,11 @@ export const RECIPE_FIELDS = [
     id: "private",
     label: "Private",
     type: FIELD_TYPES.SWITCH,
-    alwaysEdit:true,
+    alwaysEdit: true,
     size: MUI_TYPOGRAPHY_SIZES.BODY1,
-    colSpan:6,
-    visibilityRestriction: "creator"
+    colSpan: 6,
+    visibilityRestriction: "creator",
   },
 ];
+
+export const ALERT_TIME = 5;
