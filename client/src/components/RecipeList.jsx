@@ -22,7 +22,7 @@ import { useEffect, useState } from "react";
 import isFavorite from "../common/utils/isFavoriteRecipe";
 
 export default function RecipeList() {
-  const { user, session } = useOutletContext();
+  const { user, session, addRemoveLoading } = useOutletContext();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchMode, setSearchMode] = useState(searchParams["mode"] || "all");
@@ -43,6 +43,10 @@ export default function RecipeList() {
       searchRecipes();
     }
   }, [user]);
+
+  useEffect(()=>{
+    addRemoveLoading("recipes",recipesLoading)
+  },[recipesLoading])
 
   useEffect(()=>{
     if(searchParams.size==0){
@@ -150,7 +154,6 @@ export default function RecipeList() {
                       ),
                     },
                   }}
-                  onBlur={() => console.log("test")}
                   sx={{ width: "100%" }}
                   onChange={(e) =>
                     setSearchParams(

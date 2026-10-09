@@ -17,6 +17,7 @@ export default function useFetch(url, method = "GET", onLoad = true) {
       return
     }
     const { urlParams = {}, searchParams = {}, ...payload } = body;
+    setLoading(true)
     fetch(compileUrl(urlParams, searchParams), compileOptions(payload))
       .then(async (r) => {
         if (r.status === 204) {
