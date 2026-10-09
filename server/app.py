@@ -261,7 +261,7 @@ class CommentList(Resource):
 
     def post(self, recipe_id):
         recipe = Recipe.query.filter(Recipe.id == recipe_id).first()
-        user = User.query.filter(User.id == get_jwt_identity()).first()
+        user = User.query.filter(User.id == int(get_jwt_identity())).first()
         validated_comment = CommentSchema().load(request.get_json(), unknown=EXCLUDE)
         comment = Comment(**validated_comment, user=user, recipe=recipe)
         db.session.add(comment)
