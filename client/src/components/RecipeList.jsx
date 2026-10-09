@@ -117,6 +117,7 @@ export default function RecipeList() {
             value={searchMode}
             exclusive
             onChange={(e, newMode) => changeSearchMode(newMode)}
+            sx={{mr:1}}
           >
             <ToggleButton value={"all"}>All</ToggleButton>
             <ToggleButton value={"fave"}>My Favorites</ToggleButton>
