@@ -66,6 +66,7 @@ export default function FormWrapper({
                 variant="contained"
                 type="submit"
                 disabled={!valid}
+                sx={{mr:1}}
               >
                 {submitLabel || "Save"}
               </Button>
