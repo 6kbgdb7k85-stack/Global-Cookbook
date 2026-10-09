@@ -251,6 +251,7 @@ export default function RecipeView() {
       )}
       {recipe?.id && (
         <>
+          <Typography variant="h6">Comments</Typography>
           {commentsLoading ? (
             <Box sx={{ mt: "1rem" }}>
               <Stack spacing={1}>
