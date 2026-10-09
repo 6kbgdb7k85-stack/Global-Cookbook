@@ -1,14 +1,16 @@
 import { AccountCircle } from "@mui/icons-material";
 import {
   AppBar,
+  Backdrop,
   Box,
+  CircularProgress,
   Container,
   IconButton,
   Menu,
   MenuItem,
   ThemeProvider,
   Toolbar,
-  Typography
+  Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
@@ -21,6 +23,7 @@ function App() {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [alerts, setAlerts] = useState([]);
   const [theme, setTheme] = useState(cookbookTheme);
+  const [appLoading, setAppLoading] = useState([]);
 
   const {
     response: session,
@@ -36,6 +39,10 @@ function App() {
       setUser(session);
     }
   }, [session]);
+
+  useEffect(() => {
+    addRemoveLoading("session", sessionLoading);
+  }, [sessionLoading]);
 
   useEffect(() => {
     if (sessionError) {
@@ -61,6 +68,16 @@ function App() {
     return () => clearInterval(intervalId);
   }, [alerts.length]);
 
+  function addRemoveLoading(process, loading) {
+    if (loading) {
+      setAppLoading((prevLoading) => [...prevLoading, process]);
+    } else {
+      setAppLoading((prevLoading) =>
+        prevLoading.filter((item) => item !== process),
+      );
+    }
+  }
+
   function addAlert(alert) {
     setAlerts((prevAlerts) => [...prevAlerts, alert]);
   }
@@ -78,6 +95,12 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
+      <Backdrop
+        open={appLoading.length > 0}
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Container
         maxWidth={"100%"}
         sx={{
@@ -130,7 +153,16 @@ function App() {
             message={alert.message}
           />
         ))}
-        <Outlet context={{ user, setUser, getSession, session, addAlert }} />
+        <Outlet
+          context={{
+            user,
+            setUser,
+            getSession,
+            session,
+            addAlert,
+            addRemoveLoading,
+          }}
+        />
       </Container>
     </ThemeProvider>
   );

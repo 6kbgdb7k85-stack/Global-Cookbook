@@ -21,7 +21,7 @@ export default function LoginSignup() {
   const [signup, setSignup] = useState(false);
   const [formData, setFormData] = useState(initFormData);
   const [formErrors, setFormErrors] = useState(null);
-  const { setUser, addAlert } = useOutletContext();
+  const { setUser, addAlert, addRemoveLoading } = useOutletContext();
 
   const {
     response: loginResponse,
@@ -32,7 +32,7 @@ export default function LoginSignup() {
   } = useFetch("login", "POST", false);
   const {
     response: signupResponse,
-    loading: setSignupResponse,
+    loading: signupLoading,
     error: signupError,
     setError: setSignupError,
     runFetch: runSignup,
@@ -44,6 +44,14 @@ export default function LoginSignup() {
       localStorage.setItem("token", loginResponse.token);
     }
   }, [loginResponse]);
+
+  useEffect(()=>{
+    addRemoveLoading("login",loginLoading)
+  },[loginLoading])
+
+  useEffect(()=>{
+    addRemoveLoading("signup",signupLoading)
+  },[signupLoading])
 
   useEffect(() => {
     if (signupResponse) {

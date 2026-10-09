@@ -26,7 +26,7 @@ import isBlocked from "../common/utils/isBlocked";
 import validateForm from "../common/utils/validateForm";
 
 export default function RecipeView() {
-  const { user } = useOutletContext();
+  const { user, addRemoveLoading } = useOutletContext();
 
   const [comments, setComments] = useState([]);
   const [edit, setEdit] = useState(false);
@@ -79,6 +79,14 @@ export default function RecipeView() {
       });
     }
   }, []);
+
+  useEffect(()=>{
+    addRemoveLoading("recipe",recipeLoading)
+  },[recipeLoading])
+
+  useEffect(()=>{
+    addRemoveLoading("create-recipe",createRecipeLoading)
+  },[createRecipeLoading])
 
   useEffect(() => {
     if (user && !recipeId) {
