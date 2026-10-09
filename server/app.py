@@ -82,11 +82,13 @@ def check_permission():
         abort(
             404, description=f"{request.endpoint.capitalize()} {entity_id} not found."
         )
-    if request.method=="GET" and getattr(entity,"private") != True:
+    if request.method == "GET" and getattr(entity, "private") != True:
         return None
     if entity.user != user:
-        if request.method=="GET":
-            return make_response({ERROR_TYPES.ERROR:"Forbidden","action":"render-access-denied"},403)
+        if request.method == "GET":
+            return make_response(
+                {ERROR_TYPES.ERROR: "Forbidden", "action": "render-access-denied"}, 403
+            )
         return make_response({ERROR_TYPES.ERROR: "Forbidden"}, 403)
 
 
@@ -145,6 +147,12 @@ class UserProfile(Resource):
 
     def patch(self, user_id):
         request_body = request.get_json()
+        if "old_password" in request_body and not self.user.authenticate(
+            request_body["old_password"]
+        ):
+            return make_response(
+                {ERROR_TYPES.FIELD_ERROR: {"old_password":["Current password is incorrect"]}}, 403
+            )
         update_data = UserSchema().load(request_body, partial=True, unknown=EXCLUDE)
         for k, v in update_data.items():
             if k == "password":
