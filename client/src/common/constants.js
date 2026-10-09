@@ -70,3 +70,26 @@ export const RECIPE_FIELDS = [
 ];
 
 export const ALERT_TIME = 5;
+
+export const EDIT_PASSWORD_FIELDS = [
+  {
+    id: "old_password",
+    label: "Current Password",
+    type: FIELD_TYPES.PASSWORD,
+    required: true,
+  },
+  {
+    id: "password",
+    label: "New Password",
+    type: FIELD_TYPES.PASSWORD,
+    required: true,
+  },
+  {
+    id: "confirm_pass",
+    label: "Confirm New Password",
+    type: FIELD_TYPES.PASSWORD,
+    required: true,
+    validation: (formData, value) => formData.password == value,
+    validationMessage: "Passwords must match.",
+  },
+];
