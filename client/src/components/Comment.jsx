@@ -55,8 +55,6 @@ export default function Comment({
   } = useFetch(`recipes/${recipeId}/comments`, "POST", false);
 
   const {
-    response: blockUserResponse,
-    loading: blockUserLoading,
     runFetch: blockUser,
   } = useFetch("users/:userId", "PATCH", false);
 

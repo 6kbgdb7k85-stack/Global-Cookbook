@@ -1,5 +1,4 @@
 import { Outlet, useNavigate, useOutletContext } from "react-router";
-import useFetch from "../utils/useFetch";
 import { useEffect } from "react";
 
 export default function ProtectedRoute() {

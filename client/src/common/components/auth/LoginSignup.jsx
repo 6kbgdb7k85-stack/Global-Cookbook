@@ -27,14 +27,12 @@ export default function LoginSignup() {
     response: loginResponse,
     loading: loginLoading,
     error: loginError,
-    setError: setLoginError,
     runFetch: runLogin,
   } = useFetch("login", "POST", false);
   const {
     response: signupResponse,
     loading: signupLoading,
     error: signupError,
-    setError: setSignupError,
     runFetch: runSignup,
   } = useFetch("signup", "POST", false);
 
@@ -82,9 +80,6 @@ export default function LoginSignup() {
   }, [loginError]);
 
   function handleChange({ name, value }) {
-    const field = signup
-      ? signupFields.find((field) => field.id === name)
-      : loginFields.find((field) => field.id === name);
     const newFormData = { ...formData };
     newFormData[name] = value;
     setFormData(newFormData);

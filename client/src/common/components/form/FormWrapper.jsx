@@ -8,7 +8,7 @@ export default function FormWrapper({
   colSpan = 12,
   formData,
   formErrors,
-  onSubmit = (e) => {},
+  onSubmit = (e) => {e.preventDefault()},
   onChange,
   submitLabel,
   edit = false,

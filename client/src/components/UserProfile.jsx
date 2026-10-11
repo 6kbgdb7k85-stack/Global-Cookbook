@@ -9,14 +9,13 @@ import {
   Typography,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import { useNavigate, useOutletContext } from "react-router";
+import { useOutletContext } from "react-router";
 import useFetch from "../common/utils/useFetch";
 import { useEffect, useState } from "react";
 import FormWrapper from "../common/components/form/FormWrapper";
 import { EDIT_PASSWORD_FIELDS, FIELD_TYPES } from "../common/constants";
 import compilePayload from "../common/utils/compilePayload";
 import validateForm from "../common/utils/validateForm";
-import FormField from "../common/components/form/FormField";
 
 const initPassForm = {
   old_password: "",
@@ -26,7 +25,6 @@ const initPassForm = {
 
 export default function UserProfile() {
   const { user } = useOutletContext();
-  const navigate = useNavigate();
 
   const [userData, setUserData] = useState(
     user || {
@@ -42,7 +40,6 @@ export default function UserProfile() {
 
   const {
     response: userResponse,
-    loading: userLoading,
     error: userError,
     runFetch: getUpdateUser,
   } = useFetch(`users/${user?.id}`);

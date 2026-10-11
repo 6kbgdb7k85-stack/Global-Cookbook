@@ -1,4 +1,3 @@
-import { FIELD_TYPES } from "../constants";
 import { setDefault } from "./setDefaultValues";
 
 export default function compilePayload(data, fields) {
