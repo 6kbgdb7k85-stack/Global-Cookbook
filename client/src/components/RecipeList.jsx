@@ -22,7 +22,7 @@ import { useEffect, useState } from "react";
 import isFavorite from "../common/utils/isFavoriteRecipe";
 
 export default function RecipeList() {
-  const { user, session, addRemoveLoading } = useOutletContext();
+  const { user, addRemoveLoading } = useOutletContext();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchMode, setSearchMode] = useState(searchParams["mode"] || "all");

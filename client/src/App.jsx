@@ -22,7 +22,6 @@ function App() {
   const [user, setUser] = useState(null);
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [alerts, setAlerts] = useState([]);
-  const [theme, setTheme] = useState(cookbookTheme);
   const [appLoading, setAppLoading] = useState([]);
 
   const {
@@ -94,7 +93,7 @@ function App() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={cookbookTheme}>
       <Backdrop
         open={appLoading.length > 0}
         sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
@@ -103,10 +102,10 @@ function App() {
       </Backdrop>
       <Container
         maxWidth={"100%"}
-        sx={{
+        sx={(theme)=>({
           backgroundColor: theme.palette.background.default,
           minHeight: "100dvh",
-        }}
+        })}
       >
         <Box sx={{ flexGrow: 1, mb: "1rem" }}>
           <AppBar position="static">
