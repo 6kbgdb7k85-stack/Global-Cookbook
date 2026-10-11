@@ -189,8 +189,11 @@ class RecipeList(Resource):
         search_text = request.args.get("text")
         search_mode = request.args.get("mode")
         recipes = Recipe.query.filter(
-            Recipe.private != True or Recipe.user_id == user_id
-        )
+            or_(
+                Recipe.private != True,
+                Recipe.user_id == user_id,
+            )
+        )   
         if search_mode == "fave":
             recipes = recipes.filter(Recipe.favorite_users.any(User.id == int(user_id)))
         elif search_mode == "own":
