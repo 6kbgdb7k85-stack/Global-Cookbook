@@ -140,6 +140,8 @@ class UserProfile(Resource):
         self.user = User.query.filter(User.id == int(user_id)).first()
         if self.user is None:
             abort(404, description=f"User {user_id} not found")
+        if int(get_jwt_identity()) != self.user.id:
+            return make_response({ERROR_TYPES.ERROR:"Forbidden"})
         return super().dispatch_request(*args, **kwargs)
 
     def get(self, user_id):
